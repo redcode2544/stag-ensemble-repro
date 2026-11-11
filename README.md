@@ -3,7 +3,7 @@
 A reproduction of [KavrakiLab/STAG_public](https://github.com/KavrakiLab/STAG_public) on all 8 peptide
 datasets, plus four extra prediction streams fused on top of it.
 
-**Headline: fused AUC 0.756 mean over 8 datasets, 0.833 over the 5 whose labels can be verified.**
+**Headline: fused AUC 0.756 mean over 8 datasets, 0.824 over the 5 the paper's own HLA criterion treats as reliable.**
 Four of eight clear 0.75. Every number below is 5-fold CV, mean of 3 seeds, with the fusion rule
 chosen on the folds that are *not* being scored.
 
@@ -26,10 +26,11 @@ chosen on the folds that are *not* being scored.
 | KLGGALQAK | A\*03 | 0.599 | 0.567 | +0.032 |
 | AVFDRKSDAK | A\*11 | 0.588 | 0.582 | +0.006 |
 | **mean, all 8** | | **0.756** | 0.723 | +0.033 |
-| **mean, 5 verifiable** | | **0.833** | 0.789 | +0.044 |
+| **mean, 5 reliable (not A\*03/A\*11)** | | **0.824** | 0.789 | +0.034 |
 
-Full per-member, per-rule breakdown: `runs/report.html` (written in Thai), raw numbers in
-`runs/results/fusion_all.json`.
+`runs/report.html` is a one-table summary naming the model used for each dataset;
+`runs/report_full.html` is the long per-member, per-rule breakdown. Both are written in Thai;
+every number in them is also in this README and in `runs/results/fusion_all.json`.
 
 ## Read this before quoting any number
 
@@ -124,7 +125,8 @@ python3 seqmodel/embed_esm.py && python3 seqmodel/train_esm.py   # stream 5
 
 # 3. fuse and report
 python3 local/fuse_all.py            # writes runs/results/fusion_all.json
-python3 local/build_report.py        # writes runs/report.html
+python3 local/build_summary.py       # writes runs/report.html (the summary table)
+python3 local/build_report.py        # writes runs/report_full.html (the long version)
 ```
 
 `hpc/make_folds.py 5` regenerates the fold assignment; it reproduces the upstream folds row for row
@@ -145,7 +147,8 @@ ext/        stream 4: database pullers, the merge, and the provenance audit
 hpc/        SLURM scripts, the two new encoders (STAG2/model2.py), fold generation,
             and folds_k5/ — the exact fold assignment every member was scored on
 seq/        derived CDR3 feature tables, one CSV per peptide
-runs/       predictions (one CSV per method × seed × fold), fusion output, report.html
+runs/       predictions (one CSV per method × seed × fold), fusion output,
+            report.html (summary table) and report_full.html (everything)
 ```
 
 ## Attribution

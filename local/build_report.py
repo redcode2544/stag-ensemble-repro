@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""Regenerate runs/report.html from the result JSON in runs/results/json/.
+"""Regenerate runs/report_full.html from the result JSON in runs/results/json/.
 
 Every number on the page is computed here; none is typed by hand.
 Inputs  : runs/results/json/{DATASET}.json            (STAG, job 85266)
           runs/results/json/{METHOD}__{DATASET}.json  (Contacts, CNN_3D, job 85280)
-Output  : runs/report.html   (overwritten in place — Oat's standing instruction)
+Output  : runs/report_full.html  (the long version; the one-table summary Oat
+          actually reads is runs/report.html, from local/build_summary.py)
 """
 import json, glob, math, html, pathlib, datetime, itertools
 from statistics import mean, stdev
 
 HERE = pathlib.Path(__file__).resolve().parent.parent
-OUT  = HERE / "runs" / "report.html"
+OUT  = HERE / "runs" / "report_full.html"
 CSS  = (pathlib.Path(__file__).resolve().parent / "report.css").read_text(encoding="utf-8")
 
 METHODS = ["STAG", "Contacts", "CNN_3D"]

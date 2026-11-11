@@ -1,0 +1,1025 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STAG — ผลจำแนก TCR-pMHC</title>
+<style>
+:root{
+  --paper:#f7f8fa; --ink:#15191f; --muted:#5b6673; --rule:#d9dde3;
+  --card:#fff; --accent:#2f6d8c; --accent-soft:#e3eef3;
+  --warn:#8a5a12; --warn-soft:#fbf0dc; --bad:#8f3a3a; --good:#2f6b4f;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:"Helvetica Neue",-apple-system,BlinkMacSystemFont,Thonburi,"Sukhumvit Set",sans-serif;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#101317; --ink:#e7ebf0; --muted:#9aa5b1; --rule:#2a3139; --card:#171c22;
+  --accent:#79b8d1; --accent-soft:#1b2a33; --warn:#e0b366; --warn-soft:#2d2415;
+  --bad:#e08585; --good:#79c3a1; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --paper:#101317; --ink:#e7ebf0; --muted:#9aa5b1; --rule:#2a3139; --card:#171c22;
+  --accent:#79b8d1; --accent-soft:#1b2a33; --warn:#e0b366; --warn-soft:#2d2415;
+  --bad:#e08585; --good:#79c3a1; color-scheme:dark;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:880px;margin:0 auto;padding-left:max(18px,env(safe-area-inset-left,0px));
+  padding-right:max(18px,env(safe-area-inset-right,0px));padding-block:clamp(28px,5vw,56px)}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(1.7rem,1.2rem+2.2vw,2.5rem);
+  line-height:1.15;margin:0 0 6px;text-wrap:balance;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:0 0 4px}
+.stamp{color:var(--muted);font-size:.8rem;font-family:var(--mono)}
+h2{font-family:var(--serif);font-size:1.3rem;font-weight:600;margin:46px 0 4px;text-wrap:balance}
+h2+.lede{color:var(--muted);margin:0 0 16px;font-size:.95rem}
+.eyebrow{font-size:.72rem;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);
+  font-weight:600;margin:0 0 10px}
+.headline{display:flex;flex-wrap:wrap;gap:14px;margin:22px 0 0}
+.tile{background:var(--card);border:1px solid var(--rule);border-radius:3px;
+  padding:14px 18px;min-width:0;flex:1 1 150px}
+.tile .k{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.tile .v{font-family:var(--serif);font-size:1.8rem;line-height:1.1;margin-top:6px;
+  font-variant-numeric:tabular-nums}
+.tile .n{font-size:.79rem;color:var(--muted);margin-top:3px}
+.note{border-left:3px solid var(--warn);background:var(--warn-soft);padding:14px 16px;
+  margin:20px 0;border-radius:0 3px 3px 0;font-size:.94rem}
+.note b{color:var(--warn)}
+.good-note{border-left-color:var(--good);background:var(--accent-soft)}
+.good-note b{color:var(--good)}
+.bad-note{border-left-color:var(--bad);background:color-mix(in oklab,var(--bad) 7%,transparent)}
+.bad-note b{color:var(--bad)}
+.scroll{overflow-x:auto;margin:18px 0;border:1px solid var(--rule);border-radius:3px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:560px}
+th,td{text-align:right;padding:9px 11px;border-bottom:1px solid var(--rule);
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+th:first-child,td:first-child{text-align:left;font-family:var(--mono);font-size:.83rem}
+thead th{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+  font-weight:600;background:var(--accent-soft)}
+tbody tr:last-child td{border-bottom:0}
+.me{font-weight:700}
+figure{margin:18px 0 6px}
+figcaption{color:var(--muted);font-size:.84rem;margin-top:8px}
+svg{display:block;width:100%;height:auto;max-width:100%}
+ul{padding-left:1.1rem} li{margin:7px 0}
+code{font-family:var(--mono);font-size:.86em;background:var(--accent-soft);padding:1px 5px;border-radius:3px}
+.prov{font-size:.86rem;color:var(--muted)}
+.prov dt{font-weight:600;color:var(--ink);margin-top:10px;font-size:.83rem}
+.prov dd{margin:2px 0 0;font-family:var(--mono);font-size:.79rem;word-break:break-all}
+hr{border:0;border-top:1px solid var(--rule);margin:36px 0 0}
+footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--rule);color:var(--muted);font-size:.84rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<p class="eyebrow">TCR-pMHC binding · 3 วิธี × 8 ชุดข้อมูล · 5-fold CV · a SLURM cluster</p>
+<h1>จำแนกการจับคู่ TCR-pMHC ได้แค่ไหน และ ensemble ช่วยได้จริงไหม</h1>
+<p class="sub">รันโค้ดต้นฉบับของ KavrakiLab/STAG_public — GNN กับ baseline สองตัวของเปเปอร์เอง บนชุดข้อมูลและ fold เดียวกัน</p>
+<p class="stamp">อัปเดต 2026-11-11 20:25 · commit 06c30a57 · split seed 20261107 คงที่ทุกรอบ
+· job 85266 (A100) + 85280 (H100) + 85339 (9 สมาชิก, H100) · 3.4 ชม. GPU สำหรับรอบแรก</p>
+
+<div class="headline">
+  <div class="tile"><div class="k">ชุดที่ผ่านเกณฑ์ 0.75</div><div class="v">4 / 8</div>
+    <div class="n">เท่าเดิม — สายใหม่ยกคะแนนทุกชุดแต่ไม่พาใครข้ามเส้น</div></div>
+  <div class="tile"><div class="k">ขึ้นแรงสุด</div>
+    <div class="v">+0.088</div>
+    <div class="n">NLVPMVATV · เทียบวิธีโครงสร้างที่ดีสุด</div></div>
+  <div class="tile"><div class="k">ชุดที่ไม่มีสัญญาณ</div>
+    <div class="v">2</div>
+    <div class="n">ทั้งสี่สายต่ำกว่า 0.62 · เดิมนับได้ 3 ตอนมีแค่สายโครงสร้าง</div></div>
+  <div class="tile"><div class="k">ค่าเฉลี่ย 8 ชุด</div>
+    <div class="v">0.756</div>
+    <div class="n">4 สาย 44 สมาชิก · ของเดิมในรีโป 0.739</div></div>
+  <div class="tile"><div class="k">เฉลี่ย 5 ชุดที่ label เชื่อได้</div>
+    <div class="v">0.824</div>
+    <div class="n">ตัด A*03/A*11 ตามเกณฑ์ของเปเปอร์เอง</div></div>
+  <div class="tile"><div class="k">TCR ที่ตีพิมพ์แล้วของ 1 ชุดที่ตาย</div>
+    <div class="v">0</div>
+    <div class="n">ค้นสามฐานข้อมูล · 10x เป็นแหล่งเดียวที่มี</div></div>
+</div>
+
+<div class="note good-note">
+<b>คำตอบสั้นๆ</b> — เอาเฉพาะของที่มาในรีโป ค่าเฉลี่ย 8 ชุดได้ 0.739
+และตัน เพิ่มสมาชิก ensemble จาก 3 เป็น 9 ตัวได้มาแค่ +0.004<br>
+<b>เพิ่มสายข้อมูลใหม่ถึงขยับได้</b> — ดึงลำดับกรดอะมิโนออกจากไฟล์โครงสร้าง (ของที่มีอยู่แล้วแต่ไม่มีใครใช้)
+ค่าเฉลี่ย 8 ชุดขึ้นเป็น <b>0.756</b> และ 5 ชุดที่ label เชื่อได้ขึ้นเป็น
+<b>0.824</b> · ชุดที่ผ่านเกณฑ์ 0.75 เพิ่มจาก 4 เป็น <b>4 ใน 8</b>
+(IVTDFSVIK 0.690 → 0.754 ข้ามมาได้)
+· ชุดที่ขึ้นแรงสุดคือ NLVPMVATV 0.606 → <b>0.695</b><br>
+<b>แต่ 8 ชุดเต็มยังไม่ถึง 0.8 และไม่ใช่เพราะโมเดล</b> — ตัวถ่วงคือ
+NLVPMVATV 0.695, AVFDRKSDAK 0.588, KLGGALQAK 0.599
+ซึ่งมี<b>สี่แหล่งข้อมูลที่ไม่เกี่ยวกันเลยอ่านได้เท่าการเดาพร้อมกัน</b>
+(GNN บนกราฟอะตอม · RandomForest บนตารางนับ contact · CNN บน voxel grid · ลำดับกรดอะมิโนดิบ)<br>
+<b>รอบล่าสุดไปหาข้อมูลจากนอกชุดนี้มาตอบ</b> — ค้น VDJdb + McPAS-TCR + IEDB หา TCR ที่งานวิจัยอื่นยืนยันแล้ว
+สำหรับทั้ง 8 peptide · ชุดที่มีวรรณกรรมรองรับ โมเดลที่เทรนจากวรรณกรรมล้วน<b>ไม่เห็นข้อมูลชุดนี้เลย</b>
+ยังทำได้ 0.644 เฉลี่ย (0.792 ที่
+GLCTLVAML) — label ของชุดพวกนั้นตรงกับวรรณกรรมจริง ·
+แต่ KLGGALQAK มี <b>0 คู่ในทั้งสามฐาน</b>
+ไม่มีใครตีพิมพ์ TCR ของ peptide นี้ไว้นอกจากการทดลอง 10x ครั้งนั้นครั้งเดียว<br>
+<b>เพดานจึงอยู่ที่ข้อมูล และตอนนี้พิสูจน์จากนอกชุดข้อมูลได้แล้ว ไม่ใช่การอนุมานจากผลโมเดล</b>
+</div>
+
+<h2>ตารางสรุป</h2>
+<p class="lede">สี่สายข้อมูล 44 สมาชิก · ตัวหนา = ฝั่งที่ชนะของชุดนั้น ·
+<b>▲</b> ensemble ดีกว่าวิธีโครงสร้างที่ดีที่สุดอย่างมีนัยสำคัญ · <b>▼</b> แย่กว่าอย่างมีนัยสำคัญ</p>
+
+<div class="scroll">
+<table>
+<thead><tr><th>ชุดข้อมูล</th><th>n</th><th>HLA</th>
+<th>ดีสุดฝั่ง<br><span style="font-weight:400;text-transform:none">โครงสร้าง (ของในรีโป)</span></th>
+<th>ดีสุดฝั่ง<br><span style="font-weight:400;text-transform:none">ลำดับ (สายใหม่)</span></th>
+<th style="background:var(--accent-soft)">Ensemble<br><span style="font-weight:400;text-transform:none">เลือกเองบน fold อื่น</span></th>
+<th>เกณฑ์ 0.75</th></tr></thead>
+<tbody>
+<tr><td>ELAGIGILTV</td><td>1,339</td><td style="font-family:var(--mono);font-size:.8rem;color:var(--muted)">A*02:01</td><td style="white-space:nowrap">0.916<span style="color:var(--muted);font-size:.72rem"> STAG</span></td><td class="me" style="white-space:nowrap">0.925<span style="color:var(--muted);font-size:.72rem"> LR</span></td><td style="color:var(--good);font-weight:700">0.936</td><td style="color:var(--good);font-weight:600">ผ่าน</td></tr>
+<tr><td>RAKFKQLL</td><td>1,884</td><td style="font-family:var(--mono);font-size:.8rem;color:var(--muted)">B*08:01</td><td style="white-space:nowrap">0.791<span style="color:var(--muted);font-size:.72rem"> STAG</span></td><td class="me" style="white-space:nowrap">0.803<span style="color:var(--muted);font-size:.72rem"> LR</span></td><td style="color:var(--good);font-weight:700">0.826<sup style="color:var(--good)">▲</sup></td><td style="color:var(--good);font-weight:600">ผ่าน</td></tr>
+<tr><td>GILGFVFTL</td><td>2,281</td><td style="font-family:var(--mono);font-size:.8rem;color:var(--muted)">A*02:01</td><td style="white-space:nowrap">0.793<span style="color:var(--muted);font-size:.72rem"> STAG</span></td><td class="me" style="white-space:nowrap">0.797<span style="color:var(--muted);font-size:.72rem"> LR</span></td><td style="color:var(--good);font-weight:700">0.821</td><td style="color:var(--good);font-weight:600">ผ่าน</td></tr>
+<tr><td>GLCTLVAML</td><td>509</td><td style="font-family:var(--mono);font-size:.8rem;color:var(--muted)">A*02:01</td><td style="white-space:nowrap">0.804<span style="color:var(--muted);font-size:.72rem"> CNN_3D</span></td><td class="me" style="white-space:nowrap">0.822<span style="color:var(--muted);font-size:.72rem"> LR</span></td><td style="color:var(--good);font-weight:700">0.842</td><td style="color:var(--good);font-weight:600">ผ่าน</td></tr>
+<tr style="opacity:.62"><td>IVTDFSVIK</td><td>335</td><td style="font-family:var(--mono);font-size:.8rem;color:var(--bad)">A*11:01</td><td style="white-space:nowrap">0.683<span style="color:var(--muted);font-size:.72rem"> STAG</span></td><td class="me" style="white-space:nowrap">0.724<span style="color:var(--muted);font-size:.72rem"> GBM</span></td><td style="color:var(--bad);font-weight:700">0.739</td><td style="color:var(--bad);font-weight:600">ไม่ผ่าน</td></tr>
+<tr><td>NLVPMVATV</td><td>964</td><td style="font-family:var(--mono);font-size:.8rem;color:var(--muted)">A*02:01</td><td style="white-space:nowrap">0.606<span style="color:var(--muted);font-size:.72rem"> STAG</span></td><td class="me" style="white-space:nowrap">0.674<span style="color:var(--muted);font-size:.72rem"> LR</span></td><td style="color:var(--bad);font-weight:700">0.695<sup style="color:var(--good)">▲</sup></td><td style="color:var(--bad);font-weight:600">ไม่ผ่าน</td></tr>
+<tr style="opacity:.62"><td>AVFDRKSDAK</td><td>875</td><td style="font-family:var(--mono);font-size:.8rem;color:var(--bad)">A*11:01</td><td class="me" style="white-space:nowrap">0.570<span style="color:var(--muted);font-size:.72rem"> CNN_3D</span></td><td style="white-space:nowrap">0.548<span style="color:var(--muted);font-size:.72rem"> LR</span></td><td style="color:var(--bad);font-weight:700">0.588</td><td style="color:var(--bad);font-weight:600">ไม่ผ่าน</td></tr>
+<tr style="opacity:.62"><td>KLGGALQAK</td><td>1,156</td><td style="font-family:var(--mono);font-size:.8rem;color:var(--bad)">A*03:01</td><td class="me" style="white-space:nowrap">0.558<span style="color:var(--muted);font-size:.72rem"> CNN_3D</span></td><td style="white-space:nowrap">0.543<span style="color:var(--muted);font-size:.72rem"> LR</span></td><td style="color:var(--bad);font-weight:700">0.599</td><td style="color:var(--bad);font-weight:600">ไม่ผ่าน</td></tr>
+<tr style="border-top:2px solid var(--ink)"><td style="font-family:var(--sans);font-weight:600">เฉลี่ย 8 ชุด</td><td style="color:var(--muted)">1,168</td><td></td><td style="font-weight:600">0.715</td><td style="font-weight:600">0.729</td><td style="color:var(--accent);font-weight:700">0.756</td><td style="font-weight:600">4 / 8</td></tr>
+<tr style="border-top:2px solid var(--ink)"><td style="font-family:var(--sans);font-weight:700">เฉลี่ย 5 ชุดที่ label เชื่อได้</td><td style="color:var(--muted)">1,395</td><td></td><td style="font-weight:700">0.782</td><td style="font-weight:700">0.804</td><td style="color:var(--accent);font-weight:700">0.824</td><td style="font-weight:700">4 / 5</td></tr>
+</tbody>
+</table>
+</div>
+<p class="prov">คอลัมน์ Ensemble = <b>เลือกทั้งชุดสมาชิกและกฎการรวมจาก fold อื่น ไม่เคยดู fold ที่กำลังให้คะแนน</b>
+จึงไม่มีการเลือกหลังเห็นผล · ถ้าตรึงสูตรเดียวทั้ง 8 ชุดแบบ "โครงสร้าง+ลำดับ แล้ว stacking"
+จะได้ 0.753 (0.823 บน 5 ชุดที่เชื่อได้)
+ซึ่งเท่ากันในทางปฏิบัติบนค่าเฉลี่ย แต่สูตรนั้นถูกเลือก<b>หลัง</b>เห็นผลแล้ว จึงไม่เอามาเป็นเลขพาดหัว<br>
+<b>ข้อนี้สำคัญ</b> — สูตรตรึงนั้นทำให้ IVTDFSVIK ได้ 0.754
+คือ<i>ข้าม</i>เกณฑ์ 0.75 ส่วนตัวเลือกที่ไม่แอบดูผลได้ 0.739 คือ<i>ไม่ข้าม</i>
+· ความต่าง +0.014 บนชุด 335 แถว
+อยู่ในระดับความแกว่งของ fold เอง (CNN_3D แกว่ง ±0.055 ที่นั่น)
+<b>เพราะฉะนั้น "ได้เพิ่มอีกชุดหนึ่ง" ไม่ใช่ข้อสรุปที่มั่นคง — ตัวเลขที่มั่นคงคือ 4 ใน 8 เท่าเดิม
+แต่ทุกชุดได้คะแนนสูงขึ้น</b>
+· ทุกสมาชิกใช้ fold ชุดเดียวกัน ตรวจแล้วตรงกันทุกชุด</p>
+
+<div class="note good-note">
+<b>ลำดับกรดอะมิโนอยู่ในไฟล์โครงสร้างมาตลอด และไม่มีใครในรีโปนี้ใช้</b><br>
+ไฟล์ PDB แต่ละไฟล์มีสี่สาย — <code>M</code> MHC heavy chain (179 residues) · <code>P</code> peptide (9–11)
+· <code>A</code> TCR α V-domain (102–113) · <code>B</code> TCR β (107–116) — ดึงลำดับออกมาได้ครบทุกไฟล์
+(19,886 ไฟล์ ไม่มีไฟล์หาย ไม่มีสายผิดรูป) แล้วตัด CDR3 ด้วย motif <code>C…[FW]G[A-Z]G</code> ตามแบบ IMGT<br>
+ตรวจแล้วว่าตัดถูก: CDR3β เริ่มด้วย <code>CAS</code> 79–85% ของแถว ตามด้วย <code>CSA</code>/<code>CAT</code>
+· CDR3α เริ่มด้วย <code>CAV</code>/<code>CAL</code>/<code>CAA</code>/<code>CAG</code> · ความยาว 6–19
+— ทั้งหมดเป็น motif จริงของ TRBV/TRAV<br>
+<b>ผลคือ logistic regression ธรรมดาบน n-gram ของลำดับ ชนะ graph neural network บนโครงสร้างที่โมเดลมาจากลำดับนั้นเอง
+ใน 6 จาก 8 ชุด</b> — บนข้อมูลชุดนี้ การสร้างโครงสร้างไม่ได้เพิ่มข้อมูลจากลำดับที่ใช้สร้างมัน</div>
+
+<div class="scroll">
+<table>
+<thead><tr><th>ชุดข้อมูล</th><th>n</th><th>HLA</th><th>STAG<br><span style="font-weight:400;text-transform:none">GNN</span></th>
+<th>Contacts<br><span style="font-weight:400;text-transform:none">RandomForest</span></th>
+<th>CNN_3D<br><span style="font-weight:400;text-transform:none">voxel CNN</span></th>
+<th style="background:var(--accent-soft)">Ensemble<br><span style="font-weight:400;text-transform:none">วัดจริง 9 สมาชิก</span></th>
+<th>เกณฑ์ 0.75</th></tr></thead>
+<tbody>
+<tr><td>ELAGIGILTV</td><td>1,339</td><td style="font-family:var(--mono);font-size:.8rem;color:var(--muted)">A*02:01</td><td class="me" style="white-space:nowrap">0.916<span style="color:var(--muted);font-size:.72rem"> ±0.003</span></td><td style="white-space:nowrap">0.852<span style="color:var(--muted);font-size:.72rem"> ±0.000</span></td><td style="white-space:nowrap">0.895<span style="color:var(--muted);font-size:.72rem"> ±0.012</span></td><td style="color:var(--good);font-weight:700">0.918</td><td style="color:var(--good);font-weight:600">ผ่าน</td></tr>
+<tr><td>RAKFKQLL</td><td>1,884</td><td style="font-family:var(--mono);font-size:.8rem;color:var(--muted)">B*08:01</td><td class="me" style="white-space:nowrap">0.791<span style="color:var(--muted);font-size:.72rem"> ±0.012</span></td><td style="white-space:nowrap">0.727<span style="color:var(--muted);font-size:.72rem"> ±0.000</span></td><td style="white-space:nowrap">0.755<span style="color:var(--muted);font-size:.72rem"> ±0.011</span></td><td style="color:var(--good);font-weight:700">0.794</td><td style="color:var(--good);font-weight:600">ผ่าน</td></tr>
+<tr><td>GILGFVFTL</td><td>2,281</td><td style="font-family:var(--mono);font-size:.8rem;color:var(--muted)">A*02:01</td><td class="me" style="white-space:nowrap">0.793<span style="color:var(--muted);font-size:.72rem"> ±0.015</span></td><td style="white-space:nowrap">0.694<span style="color:var(--muted);font-size:.72rem"> ±0.000</span></td><td style="white-space:nowrap">0.739<span style="color:var(--muted);font-size:.72rem"> ±0.020</span></td><td style="color:var(--good);font-weight:700">0.789<sup style="color:var(--bad)" title="แย่กว่าสมาชิกเดี่ยวที่ดีสุดอย่างมีนัย">▼</sup></td><td style="color:var(--good);font-weight:600">ผ่าน</td></tr>
+<tr><td>GLCTLVAML</td><td>509</td><td style="font-family:var(--mono);font-size:.8rem;color:var(--muted)">A*02:01</td><td style="white-space:nowrap">0.757<span style="color:var(--muted);font-size:.72rem"> ±0.017</span></td><td style="white-space:nowrap">0.739<span style="color:var(--muted);font-size:.72rem"> ±0.000</span></td><td class="me" style="white-space:nowrap">0.805<span style="color:var(--muted);font-size:.72rem"> ±0.029</span></td><td style="color:var(--good);font-weight:700">0.841</td><td style="color:var(--good);font-weight:600">ผ่าน</td></tr>
+<tr style="opacity:.62"><td>IVTDFSVIK</td><td>335</td><td style="font-family:var(--mono);font-size:.8rem;color:var(--bad)">A*11:01</td><td class="me" style="white-space:nowrap">0.683<span style="color:var(--muted);font-size:.72rem"> ±0.005</span></td><td style="white-space:nowrap">0.619<span style="color:var(--muted);font-size:.72rem"> ±0.000</span></td><td style="white-space:nowrap">0.655<span style="color:var(--muted);font-size:.72rem"> ±0.055</span></td><td style="color:var(--bad);font-weight:700">0.723</td><td style="color:var(--bad);font-weight:600">ไม่ผ่าน</td></tr>
+<tr><td>NLVPMVATV</td><td>964</td><td style="font-family:var(--mono);font-size:.8rem;color:var(--muted)">A*02:01</td><td class="me" style="white-space:nowrap">0.606<span style="color:var(--muted);font-size:.72rem"> ±0.014</span></td><td style="white-space:nowrap">0.549<span style="color:var(--muted);font-size:.72rem"> ±0.000</span></td><td style="white-space:nowrap">0.580<span style="color:var(--muted);font-size:.72rem"> ±0.003</span></td><td style="color:var(--bad);font-weight:700">0.640</td><td style="color:var(--bad);font-weight:600">ไม่ผ่าน</td></tr>
+<tr style="opacity:.62"><td>AVFDRKSDAK</td><td>875</td><td style="font-family:var(--mono);font-size:.8rem;color:var(--bad)">A*11:01</td><td style="white-space:nowrap">0.544<span style="color:var(--muted);font-size:.72rem"> ±0.018</span></td><td style="white-space:nowrap">0.520<span style="color:var(--muted);font-size:.72rem"> ±0.000</span></td><td class="me" style="white-space:nowrap">0.571<span style="color:var(--muted);font-size:.72rem"> ±0.022</span></td><td style="color:var(--bad);font-weight:700">0.602<sup style="color:var(--good)" title="ดีกว่าสมาชิกเดี่ยวที่ดีสุดอย่างมีนัย">▲</sup></td><td style="color:var(--bad);font-weight:600">ไม่ผ่าน</td></tr>
+<tr style="opacity:.62"><td>KLGGALQAK</td><td>1,156</td><td style="font-family:var(--mono);font-size:.8rem;color:var(--bad)">A*03:01</td><td style="white-space:nowrap">0.555<span style="color:var(--muted);font-size:.72rem"> ±0.026</span></td><td style="white-space:nowrap">0.547<span style="color:var(--muted);font-size:.72rem"> ±0.000</span></td><td class="me" style="white-space:nowrap">0.558<span style="color:var(--muted);font-size:.72rem"> ±0.017</span></td><td style="color:var(--bad);font-weight:700">0.605<sup style="color:var(--good)" title="ดีกว่าสมาชิกเดี่ยวที่ดีสุดอย่างมีนัย">▲</sup></td><td style="color:var(--bad);font-weight:600">ไม่ผ่าน</td></tr>
+<tr style="border-top:2px solid var(--ink)"><td style="font-family:var(--sans);font-weight:600">เฉลี่ย 8 ชุด</td><td style="color:var(--muted)">1,168</td><td style="color:var(--muted);font-size:.78rem">ทุกชุด</td><td class="me">0.706</td><td>0.656</td><td>0.695</td><td style="color:var(--accent);font-weight:700">0.739</td><td style="font-weight:600">4 / 8</td></tr>
+<tr style="border-top:2px solid var(--ink)"><td style="font-family:var(--sans);font-weight:700">เฉลี่ย 5 ชุดที่ label เชื่อได้</td><td style="color:var(--muted)">1,395</td><td style="color:var(--muted);font-size:.78rem">ตัด A*03/A*11</td><td class="me">0.773</td><td>0.712</td><td>0.755</td><td style="color:var(--accent);font-weight:700">0.796</td><td style="font-weight:700">4 / 5</td></tr>
+</tbody>
+</table>
+</div>
+<p class="prov">ตัวเลขสามวิธี = <b>ค่าเฉลี่ยของ 3 init</b> ตัวเลขหลัง ± คือระยะห่างระหว่าง init
+ที่สูงสุดกับต่ำสุด (เป็น error bar ที่วัดเอง ไม่ใช่ค่าประมาณ) · คอลัมน์ Ensemble = <b>รวม prediction ราย sample จริง</b>
+จากทั้ง 9 สมาชิก (3 วิธี × 3 init) ด้วยกฎถ่วงน้ำหนัก d&prime; ซึ่งเป็นกฎที่ดีที่สุดในสี่กฎที่ทดสอบ
+· <b>▲</b> = ดีกว่าสมาชิกเดี่ยวที่ดีที่สุดอย่างมีนัยสำคัญ · <b>▼</b> = แย่กว่าอย่างมีนัยสำคัญ (paired t ราย fold, |t| &gt; 2.776)
+· <b>ไม่มีชุดใดที่ ensemble ดันข้ามเกณฑ์ 0.75 มาได้</b>
+· ทุกสมาชิกใช้ fold ชุดเดียวกัน ตรวจแล้วตรงกันทุกชุด: <b>ตรงกันทั้งหมด</b>
+· รายละเอียดอยู่ในหัวข้อ "วัดจริงแล้ว ensemble ได้เท่าไร" ด้านล่าง</p>
+
+<div class="note good-note">
+<b>ทำไมสามชุดล่างถึงตาย — คำตอบอยู่ในเปเปอร์ของเขาเอง</b><br>
+ชุดที่แย่ที่สุดสามในสี่ชุดคือ <code>KLGGALQAK</code> (A*03:01), <code>AVFDRKSDAK</code> และ
+<code>IVTDFSVIK</code> (A*11:01) — ผู้เขียนเปเปอร์เขียนไว้เองว่า
+<i>"the A*03 and A*11 dextramers in the 10x datasets appear to have high levels of non-specific binding"</i>
+แล้ว<b>ตัดตัวอย่าง A*03 และ A*11 ทั้งหมดออกจากชุดรวม pan_peptide</b>
+แต่ชุดแยกราย peptide สามชุดนี้<b>สร้างมาจากข้อมูลก้อนที่เขาตัดทิ้งนั่นแหละ</b> ไม่มีแหล่งอื่นให้ใช้<br>
+ยืนยันกับข้อมูลจริงแล้ว: อ่านลำดับ MHC heavy chain จากไฟล์โครงสร้างโดยตรง ตำแหน่ง 50–70 แยกเป็นสามกลุ่มพอดี —
+<code>WDGETRKVKAH</code> (A*02 สี่ชุด) · <code>WDRNTQIFKTN</code> (B*08 หนึ่งชุด) ·
+<code>WDQETRNVKAQ</code> (A*03/A*11 สามชุด)<br>
+<b>และงานอื่นก็เจอเหมือนกัน</b> — NetTCR 2.2 ตัด KLGGALQAK, AVFDRKSDAK และ NLVPMVATV ออกจากการวิเคราะห์
+เพราะโมเดลเต็มได้ AUC ต่ำกว่า 0.65 และระบุว่า peptide ที่ทำนายได้แย่ (KLG, AVF, IVT …)
+<b>มีแต่ข้อมูล 10x อย่างเดียว</b> ไม่มีข้อมูลจากฐานอื่นมาช่วยยืนยัน<br>
+นี่คือ<b>เพดานจาก label noise ไม่ใช่เพดานของโมเดล</b> — สามวิธีที่ไม่เกี่ยวกันได้ 0.52–0.61 เท่ากัน
+เพราะกำลังเรียนจาก label ที่ dextramer ติดมาแบบไม่จำเพาะ
+</div>
+
+<div class="note">
+<b>ถ้าใช้เกณฑ์ของผู้เขียนเองกับชุดแยกด้วย</b> — ตัด A*03/A*11 ออกเหมือนที่เขาทำกับ pan_peptide
+เหลือ 5 ชุดที่ label เชื่อได้ ค่าเฉลี่ยขยับจาก 0.706 เป็น
+<b>0.773</b> (STAG เดี่ยว) และจาก 0.739 เป็น
+<b>0.796</b> (ensemble 9 สมาชิก)
+— <b>เข้าช่วง 0.75–0.80 ทั้งคู่</b>
+นี่ไม่ใช่การเลือกเฉพาะชุดที่ได้ผลดี แต่คือการใช้เกณฑ์คัดข้อมูลที่เปเปอร์ประกาศไว้แล้วให้สม่ำเสมอ
+ถ้ารายงานแบบนี้ <b>ต้องเขียนกำกับเสมอว่าตัดอะไรออกและเพราะอะไร</b>
+</div>
+
+<div class="note">
+<b>อ่านเลขนี้อย่างไร</b> — โค้ด cross-validation ของเปเปอร์เลือก epoch ที่ดีที่สุด <i>จาก test fold เอง</i>
+(<code>if test_auc &gt; best_test_auc</code>) โดยไม่มี validation set แยก ค่า AUC ทุกค่าในหน้านี้จึงถูกคัดเลือกบนข้อมูลชุดเดียวกับที่ใช้วัด
+และมีอคติเข้าข้างตัวเองติดมาโดยโครงสร้าง <b>ทั้งสามวิธีมีอคตินี้เท่ากันจึงเทียบกันเองได้</b>
+แต่ไม่มีวิธีใดอ้างเป็นประสิทธิภาพกับข้อมูลที่ไม่เคยเห็นได้
+</div>
+
+<h2>ทั้งเก้าวิธี สี่สายข้อมูล</h2>
+<p class="lede">ค่าเฉลี่ย ± ช่วงที่แกว่งระหว่าง 3 init · ตัวหนา = ดีที่สุดของชุดนั้น</p>
+
+<div class="scroll">
+<table>
+<thead><tr><th>ชุด</th>
+<th colspan="3" style="text-align:center;background:var(--accent-soft)">โครงสร้าง (ของในรีโป)</th>
+<th colspan="4" style="text-align:center">ลำดับกรดอะมิโน (ใหม่)</th>
+<th colspan="2" style="text-align:center">contact geometry (ใหม่)</th></tr>
+<tr><th></th><th>STAG</th><th>Contacts</th><th>CNN_3D</th>
+<th>LR</th><th>GBM</th><th>MLP</th><th>KNN</th><th>ConGBM</th><th>ConLR</th></tr></thead>
+<tbody>
+<tr><td>ELAGIGILTV</td><td style="white-space:nowrap">0.916<span style="color:var(--muted);font-size:.7rem"> ±0.003</span></td><td style="white-space:nowrap">0.852<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.895<span style="color:var(--muted);font-size:.7rem"> ±0.012</span></td><td style="white-space:nowrap">0.925<span style="color:var(--muted);font-size:.7rem"> ±0.001</span></td><td style="white-space:nowrap">0.909<span style="color:var(--muted);font-size:.7rem"> ±0.009</span></td><td style="white-space:nowrap">0.907<span style="color:var(--muted);font-size:.7rem"> ±0.007</span></td><td style="white-space:nowrap">0.809<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.844<span style="color:var(--muted);font-size:.7rem"> ±0.006</span></td><td style="white-space:nowrap">0.773<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td style="white-space:nowrap">0.832<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td style="white-space:nowrap">0.713<span style="color:var(--muted);font-size:.7rem"> ±0.006</span></td><td style="white-space:nowrap">0.833<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.642<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.925<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td class="me" style="white-space:nowrap">0.926<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.920<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.924<span style="color:var(--muted);font-size:.7rem"> ±0.001</span></td><td style="white-space:nowrap">0.817<span style="color:var(--muted);font-size:.7rem"> ±0.004</span></td></tr>
+<tr><td>RAKFKQLL</td><td style="white-space:nowrap">0.791<span style="color:var(--muted);font-size:.7rem"> ±0.012</span></td><td style="white-space:nowrap">0.727<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.754<span style="color:var(--muted);font-size:.7rem"> ±0.011</span></td><td style="white-space:nowrap">0.803<span style="color:var(--muted);font-size:.7rem"> ±0.003</span></td><td style="white-space:nowrap">0.775<span style="color:var(--muted);font-size:.7rem"> ±0.004</span></td><td style="white-space:nowrap">0.769<span style="color:var(--muted);font-size:.7rem"> ±0.012</span></td><td style="white-space:nowrap">0.657<span style="color:var(--muted);font-size:.7rem"> ±0.015</span></td><td style="white-space:nowrap">0.678<span style="color:var(--muted);font-size:.7rem"> ±0.004</span></td><td style="white-space:nowrap">0.649<span style="color:var(--muted);font-size:.7rem"> ±0.001</span></td><td style="white-space:nowrap">0.766<span style="color:var(--muted);font-size:.7rem"> ±0.006</span></td><td style="white-space:nowrap">0.682<span style="color:var(--muted);font-size:.7rem"> ±0.022</span></td><td style="white-space:nowrap">0.767<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td style="white-space:nowrap">0.649<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.803<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.802<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td style="white-space:nowrap">0.800<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td class="me" style="white-space:nowrap">0.807<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.649<span style="color:var(--muted);font-size:.7rem"> ±0.009</span></td></tr>
+<tr><td>GILGFVFTL</td><td style="white-space:nowrap">0.793<span style="color:var(--muted);font-size:.7rem"> ±0.015</span></td><td style="white-space:nowrap">0.694<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.739<span style="color:var(--muted);font-size:.7rem"> ±0.020</span></td><td class="me" style="white-space:nowrap">0.797<span style="color:var(--muted);font-size:.7rem"> ±0.001</span></td><td style="white-space:nowrap">0.776<span style="color:var(--muted);font-size:.7rem"> ±0.007</span></td><td style="white-space:nowrap">0.767<span style="color:var(--muted);font-size:.7rem"> ±0.011</span></td><td style="white-space:nowrap">0.652<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.698<span style="color:var(--muted);font-size:.7rem"> ±0.003</span></td><td style="white-space:nowrap">0.655<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td style="white-space:nowrap">0.758<span style="color:var(--muted);font-size:.7rem"> ±0.003</span></td><td style="white-space:nowrap">0.759<span style="color:var(--muted);font-size:.7rem"> ±0.007</span></td><td style="white-space:nowrap">0.745<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.725<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.791<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td style="white-space:nowrap">0.796<span style="color:var(--muted);font-size:.7rem"> ±0.001</span></td><td style="white-space:nowrap">0.792<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.795<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.646<span style="color:var(--muted);font-size:.7rem"> ±0.010</span></td></tr>
+<tr><td>GLCTLVAML</td><td style="white-space:nowrap">0.757<span style="color:var(--muted);font-size:.7rem"> ±0.017</span></td><td style="white-space:nowrap">0.739<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.804<span style="color:var(--muted);font-size:.7rem"> ±0.029</span></td><td style="white-space:nowrap">0.822<span style="color:var(--muted);font-size:.7rem"> ±0.001</span></td><td style="white-space:nowrap">0.820<span style="color:var(--muted);font-size:.7rem"> ±0.007</span></td><td style="white-space:nowrap">0.802<span style="color:var(--muted);font-size:.7rem"> ±0.031</span></td><td style="white-space:nowrap">0.810<span style="color:var(--muted);font-size:.7rem"> ±0.027</span></td><td style="white-space:nowrap">0.656<span style="color:var(--muted);font-size:.7rem"> ±0.056</span></td><td style="white-space:nowrap">0.643<span style="color:var(--muted);font-size:.7rem"> ±0.004</span></td><td style="white-space:nowrap">0.795<span style="color:var(--muted);font-size:.7rem"> ±0.041</span></td><td style="white-space:nowrap">0.792<span style="color:var(--muted);font-size:.7rem"> ±0.004</span></td><td style="white-space:nowrap">0.777<span style="color:var(--muted);font-size:.7rem"> ±0.009</span></td><td style="white-space:nowrap">0.792<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.821<span style="color:var(--muted);font-size:.7rem"> ±0.004</span></td><td class="me" style="white-space:nowrap">0.822<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td style="white-space:nowrap">0.822<span style="color:var(--muted);font-size:.7rem"> ±0.004</span></td><td style="white-space:nowrap">0.788<span style="color:var(--muted);font-size:.7rem"> ±0.006</span></td><td style="white-space:nowrap">0.792<span style="color:var(--muted);font-size:.7rem"> ±0.020</span></td></tr>
+<tr><td>IVTDFSVIK</td><td style="white-space:nowrap">0.683<span style="color:var(--muted);font-size:.7rem"> ±0.005</span></td><td style="white-space:nowrap">0.618<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.655<span style="color:var(--muted);font-size:.7rem"> ±0.055</span></td><td style="white-space:nowrap">0.701<span style="color:var(--muted);font-size:.7rem"> ±0.015</span></td><td class="me" style="white-space:nowrap">0.724<span style="color:var(--muted);font-size:.7rem"> ±0.032</span></td><td style="white-space:nowrap">0.666<span style="color:var(--muted);font-size:.7rem"> ±0.077</span></td><td style="white-space:nowrap">0.685<span style="color:var(--muted);font-size:.7rem"> ±0.065</span></td><td style="white-space:nowrap">0.548<span style="color:var(--muted);font-size:.7rem"> ±0.037</span></td><td style="white-space:nowrap">0.623<span style="color:var(--muted);font-size:.7rem"> ±0.009</span></td><td style="white-space:nowrap">0.700<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td style="white-space:nowrap">0.468<span style="color:var(--muted);font-size:.7rem"> ±0.073</span></td><td style="white-space:nowrap">0.712<span style="color:var(--muted);font-size:.7rem"> ±0.006</span></td><td style="white-space:nowrap">0.531<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.678<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td style="white-space:nowrap">0.678<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td style="white-space:nowrap">0.701<span style="color:var(--muted);font-size:.7rem"> ±0.003</span></td><td style="white-space:nowrap">0.663<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.658<span style="color:var(--muted);font-size:.7rem"> ±0.023</span></td></tr>
+<tr><td>NLVPMVATV</td><td style="white-space:nowrap">0.606<span style="color:var(--muted);font-size:.7rem"> ±0.014</span></td><td style="white-space:nowrap">0.549<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.580<span style="color:var(--muted);font-size:.7rem"> ±0.003</span></td><td style="white-space:nowrap">0.674<span style="color:var(--muted);font-size:.7rem"> ±0.006</span></td><td style="white-space:nowrap">0.634<span style="color:var(--muted);font-size:.7rem"> ±0.029</span></td><td style="white-space:nowrap">0.638<span style="color:var(--muted);font-size:.7rem"> ±0.044</span></td><td style="white-space:nowrap">0.596<span style="color:var(--muted);font-size:.7rem"> ±0.008</span></td><td style="white-space:nowrap">0.542<span style="color:var(--muted);font-size:.7rem"> ±0.013</span></td><td style="white-space:nowrap">0.520<span style="color:var(--muted);font-size:.7rem"> ±0.005</span></td><td style="white-space:nowrap">0.641<span style="color:var(--muted);font-size:.7rem"> ±0.004</span></td><td style="white-space:nowrap">0.567<span style="color:var(--muted);font-size:.7rem"> ±0.020</span></td><td style="white-space:nowrap">0.639<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td style="white-space:nowrap">0.605<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td class="me" style="white-space:nowrap">0.679<span style="color:var(--muted);font-size:.7rem"> ±0.007</span></td><td style="white-space:nowrap">0.669<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td style="white-space:nowrap">0.671<span style="color:var(--muted);font-size:.7rem"> ±0.001</span></td><td style="white-space:nowrap">0.658<span style="color:var(--muted);font-size:.7rem"> ±0.001</span></td><td style="white-space:nowrap">0.570<span style="color:var(--muted);font-size:.7rem"> ±0.020</span></td></tr>
+<tr><td>AVFDRKSDAK</td><td style="white-space:nowrap">0.544<span style="color:var(--muted);font-size:.7rem"> ±0.018</span></td><td style="white-space:nowrap">0.520<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td class="me" style="white-space:nowrap">0.570<span style="color:var(--muted);font-size:.7rem"> ±0.022</span></td><td style="white-space:nowrap">0.548<span style="color:var(--muted);font-size:.7rem"> ±0.031</span></td><td style="white-space:nowrap">0.523<span style="color:var(--muted);font-size:.7rem"> ±0.029</span></td><td style="white-space:nowrap">0.503<span style="color:var(--muted);font-size:.7rem"> ±0.043</span></td><td style="white-space:nowrap">0.489<span style="color:var(--muted);font-size:.7rem"> ±0.014</span></td><td style="white-space:nowrap">0.471<span style="color:var(--muted);font-size:.7rem"> ±0.039</span></td><td style="white-space:nowrap">0.481<span style="color:var(--muted);font-size:.7rem"> ±0.015</span></td><td style="white-space:nowrap">0.534<span style="color:var(--muted);font-size:.7rem"> ±0.026</span></td><td style="white-space:nowrap">0.528<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.531<span style="color:var(--muted);font-size:.7rem"> ±0.004</span></td><td style="white-space:nowrap">0.501<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.552<span style="color:var(--muted);font-size:.7rem"> ±0.018</span></td><td style="white-space:nowrap">0.567<span style="color:var(--muted);font-size:.7rem"> ±0.013</span></td><td style="white-space:nowrap">0.563<span style="color:var(--muted);font-size:.7rem"> ±0.010</span></td><td style="white-space:nowrap">0.539<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.503<span style="color:var(--muted);font-size:.7rem"> ±0.001</span></td></tr>
+<tr><td>KLGGALQAK</td><td style="white-space:nowrap">0.555<span style="color:var(--muted);font-size:.7rem"> ±0.026</span></td><td style="white-space:nowrap">0.547<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.558<span style="color:var(--muted);font-size:.7rem"> ±0.017</span></td><td style="white-space:nowrap">0.543<span style="color:var(--muted);font-size:.7rem"> ±0.006</span></td><td style="white-space:nowrap">0.534<span style="color:var(--muted);font-size:.7rem"> ±0.018</span></td><td style="white-space:nowrap">0.520<span style="color:var(--muted);font-size:.7rem"> ±0.027</span></td><td style="white-space:nowrap">0.514<span style="color:var(--muted);font-size:.7rem"> ±0.003</span></td><td style="white-space:nowrap">0.554<span style="color:var(--muted);font-size:.7rem"> ±0.044</span></td><td style="white-space:nowrap">0.556<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.556<span style="color:var(--muted);font-size:.7rem"> ±0.003</span></td><td>—</td><td style="white-space:nowrap">0.551<span style="color:var(--muted);font-size:.7rem"> ±0.009</span></td><td>—</td><td style="white-space:nowrap">0.545<span style="color:var(--muted);font-size:.7rem"> ±0.006</span></td><td style="white-space:nowrap">0.560<span style="color:var(--muted);font-size:.7rem"> ±0.004</span></td><td class="me" style="white-space:nowrap">0.561<span style="color:var(--muted);font-size:.7rem"> ±0.007</span></td><td style="white-space:nowrap">0.555<span style="color:var(--muted);font-size:.7rem"> ±0.014</span></td><td style="white-space:nowrap">0.489<span style="color:var(--muted);font-size:.7rem"> ±0.007</span></td></tr><tr style="border-top:2px solid var(--ink)"><td style="font-family:var(--sans);font-weight:700">เฉลี่ย</td><td style="font-weight:600">0.706</td><td style="font-weight:600">0.656</td><td style="font-weight:600">0.695</td><td style="font-weight:600">0.727</td><td style="font-weight:600">0.712</td><td style="font-weight:600">0.697</td><td style="font-weight:600">0.651</td><td style="font-weight:600">0.624</td><td style="font-weight:600">0.613</td><td style="font-weight:600">0.698</td><td style="font-weight:600">0.644<span style="color:var(--muted);font-size:.7rem"> (7)</span></td><td style="font-weight:600">0.694</td><td style="font-weight:600">0.635<span style="color:var(--muted);font-size:.7rem"> (7)</span></td><td style="font-weight:600">0.724</td><td style="font-weight:600">0.727</td><td style="font-weight:600">0.729</td><td style="font-weight:600">0.716</td><td style="font-weight:600">0.641</td></tr>
+</tbody>
+</table>
+</div>
+<p class="prov">สายลำดับ: LR = logistic regression บน character n-gram ของ CDR3 และ framework region
+· GBM = gradient-boosted trees · MLP = neural net เล็ก · KNN = nearest neighbours แบบ cosine
+· <b>ไม่ใช้ค่าคงที่จากตำราเลย</b> (ไม่มี BLOSUM ไม่มี Atchley) ทุก feature คำนวณจากลำดับเอง สคริปต์เดียวรันซ้ำได้ทั้งหมด
+· เลือก representation (CDR3 ล้วน / สายเต็ม / ทั้งคู่) และ hyperparameter ด้วย inner-CV บน train fold เท่านั้น —
+ชุดใหญ่เลือก "ทั้งคู่" (framework บอก V/J gene) ชุด 335 แถวเลือก CDR3 ล้วน 14 ใน 15 fold<br>
+สาย contact geometry เก็บข้อมูลที่ baseline <code>Contacts</code> ทิ้งไป (แตะ peptide ตำแหน่งไหน มาจาก loop ไหน
+contact ของ MHC กับ TCR) แต่<b>อ่อนกว่าที่คาด</b> และบน AVFDRKSDAK ต่ำกว่าการเดา (0.471) —
+ตัวเลือกอัตโนมัติจึงไม่เลือกสายนี้ ซึ่งเป็นพฤติกรรมที่ถูกต้อง</p>
+
+<h2>รวมสายไหนเข้าด้วยกันดี</h2>
+<p class="lede">เทียบทุกชุดสมาชิก · ตัวเลขสีม่วงคือเลขพาดหัว ซึ่งเลือก pool และกฎจาก fold อื่น</p>
+
+<div class="scroll">
+<table>
+<thead><tr><th>ชุด</th><th>ดีสุดฝั่ง<br>โครงสร้าง</th><th>โครงสร้างล้วน</th><th>ลำดับล้วน</th><th>โครงสร้าง+ลำดับ<br>stacking</th><th>ทั้งสามสาย<br>stacking</th><th style="background:var(--accent-soft)">เลือก pool+กฎ<br>บน fold อื่น</th></tr></thead>
+<tbody>
+<tr><td>ELAGIGILTV</td><td style="color:var(--muted)">0.916</td><td>0.923</td><td>0.928</td><td>0.936</td><td>0.936</td><td>0.924</td><td>0.931</td><td style="font-weight:700;color:var(--accent)">0.936</td></tr>
+<tr><td>RAKFKQLL</td><td style="color:var(--muted)">0.791</td><td>0.801</td><td>0.815<sup style="color:var(--good)">▲</sup></td><td>0.827<sup style="color:var(--good)">▲</sup></td><td>0.827<sup style="color:var(--good)">▲</sup></td><td>0.797</td><td>0.826<sup style="color:var(--good)">▲</sup></td><td style="font-weight:700;color:var(--accent)">0.826<sup style="color:var(--good)">▲</sup></td></tr>
+<tr><td>GILGFVFTL</td><td style="color:var(--muted)">0.793</td><td>0.800</td><td>0.801</td><td>0.821</td><td>0.821</td><td>0.798</td><td>0.812</td><td style="font-weight:700;color:var(--accent)">0.821</td></tr>
+<tr><td>GLCTLVAML</td><td style="color:var(--muted)">0.804</td><td>0.838</td><td>0.833</td><td>0.863</td><td>0.842</td><td>0.846</td><td>0.857<sup style="color:var(--good)">▲</sup></td><td style="font-weight:700;color:var(--accent)">0.842</td></tr>
+<tr><td>IVTDFSVIK</td><td style="color:var(--muted)">0.683</td><td>0.715</td><td>0.740</td><td>0.735</td><td>0.739</td><td>0.740</td><td>0.730</td><td style="font-weight:700;color:var(--accent)">0.739</td></tr>
+<tr><td>NLVPMVATV</td><td style="color:var(--muted)">0.606</td><td>0.624</td><td>0.677<sup style="color:var(--good)">▲</sup></td><td>0.695<sup style="color:var(--good)">▲</sup></td><td>0.695<sup style="color:var(--good)">▲</sup></td><td>0.679<sup style="color:var(--good)">▲</sup></td><td>0.689<sup style="color:var(--good)">▲</sup></td><td style="font-weight:700;color:var(--accent)">0.695<sup style="color:var(--good)">▲</sup></td></tr>
+<tr><td>AVFDRKSDAK</td><td style="color:var(--muted)">0.570</td><td>0.588</td><td>0.515<sup style="color:var(--bad)">▼</sup></td><td>0.569</td><td>0.588</td><td>0.556</td><td>0.579</td><td style="font-weight:700;color:var(--accent)">0.588</td></tr>
+<tr><td>KLGGALQAK</td><td style="color:var(--muted)">0.558</td><td>0.599<sup style="color:var(--good)">▲</sup></td><td>0.542</td><td>0.606</td><td>0.591</td><td>0.590</td><td>0.608<sup style="color:var(--good)">▲</sup></td><td style="font-weight:700;color:var(--accent)">0.599</td></tr>
+<tr style="border-top:2px solid var(--ink)"><td style="font-family:var(--sans);font-weight:700">เฉลี่ย 8 ชุด</td><td style="color:var(--muted);font-weight:600">0.715</td><td style="font-weight:600">0.736</td><td style="font-weight:600">0.731</td><td style="font-weight:600">0.756</td><td style="font-weight:600">0.755</td><td style="font-weight:600">0.741</td><td style="font-weight:600">0.754</td><td style="font-weight:600">0.756</td></tr>
+<tr style="border-top:2px solid var(--ink)"><td style="font-family:var(--sans);font-weight:700">เฉลี่ย 5 ชุดที่เชื่อได้</td><td style="color:var(--muted);font-weight:600">0.782</td><td style="font-weight:600">0.797</td><td style="font-weight:600">0.811</td><td style="font-weight:600">0.828</td><td style="font-weight:600">0.824</td><td style="font-weight:600">0.809</td><td style="font-weight:600">0.823</td><td style="font-weight:600">0.824</td></tr>
+</tbody>
+</table>
+</div>
+<p class="prov"><b>ตัวเลือกอัตโนมัติทำงานถูกต้อง</b> — บน AVFDRKSDAK มันเลือก "โครงสร้างล้วน" ทั้ง 5 fold
+เพราะสมาชิกสายลำดับที่นั่นต่ำกว่าการเดา ถ้าเหมารวมจะเสีย AUC ไป -0.073
+· ส่วนชุดที่มีสัญญาณเลือก "โครงสร้าง+ลำดับ" ทุก fold · นี่คือข้อสรุปเดิมที่ว่า ensemble ต้องตัดสินรายชุด
+ไม่ใช่เหมารวม แต่คราวนี้เป็นกลไกที่ทำงานเองโดยไม่ดูคำตอบ</p>
+
+<h2>ผลทั้งสามวิธี (เฉพาะของที่มาในรีโป)</h2>
+<p class="lede"><span style="color:var(--accent);font-weight:600">●</span> STAG (GNN) · <span style="color:var(--warn);font-weight:600">●</span> Contacts (RF) · <span style="color:var(--good);font-weight:600">●</span> CNN_3D (voxel) · <span style="color:var(--accent);font-weight:600">◇</span> ensemble ที่วัดจริง · จุด = ค่าเฉลี่ยของ 3 init · ขีดสีเดียวกัน = ช่วงที่ init แกว่ง (error bar)
+· เส้นเทา = ระยะจากวิธีแย่สุดถึงดีสุด · ตัวเลขขวา = ค่าที่ดีที่สุดของชุดนั้น รวม ensemble ด้วย</p>
+
+<figure>
+<svg viewBox="0 0 700 386" role="img" aria-label="ROC-AUC ของสามวิธีในแต่ละชุดข้อมูล">
+  <line x1="211.6" y1="28" x2="211.6" y2="310" stroke="var(--bad)" stroke-width="1" stroke-dasharray="3 3" opacity=".75"/>
+  <text x="211.6" y="23" fill="var(--bad)" font-size="10.5" text-anchor="middle">เดาสุ่ม 0.50</text>
+  <line x1="429.8" y1="28" x2="429.8" y2="310" stroke="var(--good)" stroke-width="1.2" stroke-dasharray="5 3" opacity=".85"/>
+  <text x="429.8" y="23" fill="var(--good)" font-size="10.5" text-anchor="middle" font-weight="600">เกณฑ์ 0.75</text>
+  <text x="0" y="58" fill="var(--ink)" font-size="11.5" font-family="var(--mono)">ELAGIGILTV</text>
+  <text x="122" y="58" fill="var(--muted)" font-size="10.5" text-anchor="end">1,339</text>
+  <line x1="518.8" y1="54" x2="574.6" y2="54" stroke="var(--rule)" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="572.9" y1="54" x2="576.0" y2="54" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <line x1="572.9" y1="49.5" x2="572.9" y2="58.5" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <line x1="576.0" y1="49.5" x2="576.0" y2="58.5" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <circle cx="574.6" cy="54" r="5.6" fill="var(--accent)"><title>STAG (GNN) · 0.9159 ± 0.0035 (3 init)</title></circle>
+  <circle cx="518.8" cy="54" r="4.4" fill="var(--warn)"><title>Contacts (RF) · 0.8520 ± 0.0000 (3 init)</title></circle>
+  <line x1="552.6" y1="54" x2="562.8" y2="54" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <line x1="552.6" y1="49.5" x2="552.6" y2="58.5" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <line x1="562.8" y1="49.5" x2="562.8" y2="58.5" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <circle cx="556.7" cy="54" r="4.4" fill="var(--good)"><title>CNN_3D (voxel) · 0.8954 ± 0.0117 (3 init)</title></circle>
+  <path d="M 576.4 48 L 581.9 54 L 576.4 60 L 570.9 54 Z" fill="none" stroke="var(--accent)" stroke-width="1.7"><title>ensemble 9 สมาชิก · 0.9179</title></path>
+  <text x="660" y="58" fill="var(--good)" font-size="12" font-weight="600" font-family="var(--mono)">0.918</text>
+  <text x="0" y="92" fill="var(--ink)" font-size="11.5" font-family="var(--mono)">RAKFKQLL</text>
+  <text x="122" y="92" fill="var(--muted)" font-size="10.5" text-anchor="end">1,884</text>
+  <line x1="409.5" y1="88" x2="465.2" y2="88" stroke="var(--rule)" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="460.0" y1="88" x2="470.7" y2="88" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <line x1="460.0" y1="83.5" x2="460.0" y2="92.5" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <line x1="470.7" y1="83.5" x2="470.7" y2="92.5" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <circle cx="465.2" cy="88" r="5.6" fill="var(--accent)"><title>STAG (GNN) · 0.7905 ± 0.0123 (3 init)</title></circle>
+  <circle cx="409.5" cy="88" r="4.4" fill="var(--warn)"><title>Contacts (RF) · 0.7267 ± 0.0000 (3 init)</title></circle>
+  <line x1="429.1" y1="88" x2="438.8" y2="88" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <line x1="429.1" y1="83.5" x2="429.1" y2="92.5" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <line x1="438.8" y1="83.5" x2="438.8" y2="92.5" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <circle cx="433.8" cy="88" r="4.4" fill="var(--good)"><title>CNN_3D (voxel) · 0.7545 ± 0.0111 (3 init)</title></circle>
+  <path d="M 468.6 82 L 474.1 88 L 468.6 94 L 463.1 88 Z" fill="none" stroke="var(--accent)" stroke-width="1.7"><title>ensemble 9 สมาชิก · 0.7945</title></path>
+  <text x="660" y="92" fill="var(--good)" font-size="12" font-weight="600" font-family="var(--mono)">0.794</text>
+  <text x="0" y="126" fill="var(--ink)" font-size="11.5" font-family="var(--mono)">GILGFVFTL</text>
+  <text x="122" y="126" fill="var(--muted)" font-size="10.5" text-anchor="end">2,281</text>
+  <line x1="380.8" y1="122" x2="467.1" y2="122" stroke="var(--rule)" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="461.5" y1="122" x2="474.6" y2="122" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <line x1="461.5" y1="117.5" x2="461.5" y2="126.5" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <line x1="474.6" y1="117.5" x2="474.6" y2="126.5" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <circle cx="467.1" cy="122" r="5.6" fill="var(--accent)"><title>STAG (GNN) · 0.7927 ± 0.0150 (3 init)</title></circle>
+  <circle cx="380.8" cy="122" r="4.4" fill="var(--warn)"><title>Contacts (RF) · 0.6939 ± 0.0000 (3 init)</title></circle>
+  <line x1="411.7" y1="122" x2="429.3" y2="122" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <line x1="411.7" y1="117.5" x2="411.7" y2="126.5" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <line x1="429.3" y1="117.5" x2="429.3" y2="126.5" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <circle cx="420.6" cy="122" r="4.4" fill="var(--good)"><title>CNN_3D (voxel) · 0.7395 ± 0.0201 (3 init)</title></circle>
+  <path d="M 464.2 116 L 469.7 122 L 464.2 128 L 458.7 122 Z" fill="none" stroke="var(--accent)" stroke-width="1.7"><title>ensemble 9 สมาชิก · 0.7894</title></path>
+  <text x="660" y="126" fill="var(--good)" font-size="12" font-weight="600" font-family="var(--mono)">0.793</text>
+  <text x="0" y="160" fill="var(--ink)" font-size="11.5" font-family="var(--mono)">GLCTLVAML</text>
+  <text x="122" y="160" fill="var(--muted)" font-size="10.5" text-anchor="end">509</text>
+  <line x1="420.6" y1="156" x2="477.4" y2="156" stroke="var(--rule)" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="427.8" y1="156" x2="442.6" y2="156" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <line x1="427.8" y1="151.5" x2="427.8" y2="160.5" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <line x1="442.6" y1="151.5" x2="442.6" y2="160.5" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <circle cx="436.4" cy="156" r="5.6" fill="var(--accent)"><title>STAG (GNN) · 0.7575 ± 0.0170 (3 init)</title></circle>
+  <circle cx="420.6" cy="156" r="4.4" fill="var(--warn)"><title>Contacts (RF) · 0.7394 ± 0.0000 (3 init)</title></circle>
+  <line x1="463.3" y1="156" x2="489.0" y2="156" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <line x1="463.3" y1="151.5" x2="463.3" y2="160.5" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <line x1="489.0" y1="151.5" x2="489.0" y2="160.5" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <circle cx="477.4" cy="156" r="4.4" fill="var(--good)"><title>CNN_3D (voxel) · 0.8046 ± 0.0295 (3 init)</title></circle>
+  <path d="M 509.1 150 L 514.6 156 L 509.1 162 L 503.6 156 Z" fill="none" stroke="var(--accent)" stroke-width="1.7"><title>ensemble 9 สมาชิก · 0.8408</title></path>
+  <text x="660" y="160" fill="var(--good)" font-size="12" font-weight="600" font-family="var(--mono)">0.841</text>
+  <text x="0" y="194" fill="var(--ink)" font-size="11.5" font-family="var(--mono)">IVTDFSVIK</text>
+  <text x="122" y="194" fill="var(--muted)" font-size="10.5" text-anchor="end">335</text>
+  <line x1="315.5" y1="190" x2="371.6" y2="190" stroke="var(--rule)" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="370.0" y1="190" x2="374.5" y2="190" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <line x1="370.0" y1="185.5" x2="370.0" y2="194.5" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <line x1="374.5" y1="185.5" x2="374.5" y2="194.5" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <circle cx="371.6" cy="190" r="5.6" fill="var(--accent)"><title>STAG (GNN) · 0.6833 ± 0.0051 (3 init)</title></circle>
+  <circle cx="315.5" cy="190" r="4.4" fill="var(--warn)"><title>Contacts (RF) · 0.6190 ± 0.0000 (3 init)</title></circle>
+  <line x1="329.3" y1="190" x2="377.2" y2="190" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <line x1="329.3" y1="185.5" x2="329.3" y2="194.5" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <line x1="377.2" y1="185.5" x2="377.2" y2="194.5" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <circle cx="347.3" cy="190" r="4.4" fill="var(--good)"><title>CNN_3D (voxel) · 0.6554 ± 0.0548 (3 init)</title></circle>
+  <path d="M 406.3 184 L 411.8 190 L 406.3 196 L 400.8 190 Z" fill="none" stroke="var(--accent)" stroke-width="1.7"><title>ensemble 9 สมาชิก · 0.7230</title></path>
+  <text x="660" y="194" fill="var(--warn)" font-size="12" font-weight="600" font-family="var(--mono)">0.723</text>
+  <text x="0" y="228" fill="var(--ink)" font-size="11.5" font-family="var(--mono)">NLVPMVATV</text>
+  <text x="122" y="228" fill="var(--muted)" font-size="10.5" text-anchor="end">964</text>
+  <line x1="254.3" y1="224" x2="304.5" y2="224" stroke="var(--rule)" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="298.2" y1="224" x2="310.9" y2="224" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <line x1="298.2" y1="219.5" x2="298.2" y2="228.5" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <line x1="310.9" y1="219.5" x2="310.9" y2="228.5" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <circle cx="304.5" cy="224" r="5.6" fill="var(--accent)"><title>STAG (GNN) · 0.6064 ± 0.0145 (3 init)</title></circle>
+  <circle cx="254.3" cy="224" r="4.4" fill="var(--warn)"><title>Contacts (RF) · 0.5489 ± 0.0000 (3 init)</title></circle>
+  <line x1="279.9" y1="224" x2="282.7" y2="224" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <line x1="279.9" y1="219.5" x2="279.9" y2="228.5" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <line x1="282.7" y1="219.5" x2="282.7" y2="228.5" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <circle cx="281.4" cy="224" r="4.4" fill="var(--good)"><title>CNN_3D (voxel) · 0.5799 ± 0.0031 (3 init)</title></circle>
+  <path d="M 333.4 218 L 338.9 224 L 333.4 230 L 327.9 224 Z" fill="none" stroke="var(--accent)" stroke-width="1.7"><title>ensemble 9 สมาชิก · 0.6395</title></path>
+  <text x="660" y="228" fill="var(--warn)" font-size="12" font-weight="600" font-family="var(--mono)">0.640</text>
+  <text x="0" y="262" fill="var(--ink)" font-size="11.5" font-family="var(--mono)">AVFDRKSDAK</text>
+  <text x="122" y="262" fill="var(--muted)" font-size="10.5" text-anchor="end">875</text>
+  <line x1="229.4" y1="258" x2="273.2" y2="258" stroke="var(--rule)" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="243.1" y1="258" x2="258.7" y2="258" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <line x1="243.1" y1="253.5" x2="243.1" y2="262.5" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <line x1="258.7" y1="253.5" x2="258.7" y2="262.5" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <circle cx="249.7" cy="258" r="5.6" fill="var(--accent)"><title>STAG (GNN) · 0.5437 ± 0.0179 (3 init)</title></circle>
+  <circle cx="229.4" cy="258" r="4.4" fill="var(--warn)"><title>Contacts (RF) · 0.5204 ± 0.0000 (3 init)</title></circle>
+  <line x1="264.7" y1="258" x2="283.5" y2="258" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <line x1="264.7" y1="253.5" x2="264.7" y2="262.5" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <line x1="283.5" y1="253.5" x2="283.5" y2="262.5" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <circle cx="273.2" cy="258" r="4.4" fill="var(--good)"><title>CNN_3D (voxel) · 0.5705 ± 0.0215 (3 init)</title></circle>
+  <path d="M 301.0 252 L 306.5 258 L 301.0 264 L 295.5 258 Z" fill="none" stroke="var(--accent)" stroke-width="1.7"><title>ensemble 9 สมาชิก · 0.6024</title></path>
+  <text x="660" y="262" fill="var(--bad)" font-size="12" font-weight="600" font-family="var(--mono)">0.602</text>
+  <text x="0" y="296" fill="var(--ink)" font-size="11.5" font-family="var(--mono)">KLGGALQAK</text>
+  <text x="122" y="296" fill="var(--muted)" font-size="10.5" text-anchor="end">1,156</text>
+  <line x1="252.7" y1="292" x2="262.4" y2="292" stroke="var(--rule)" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="247.1" y1="292" x2="270.1" y2="292" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <line x1="247.1" y1="287.5" x2="247.1" y2="296.5" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <line x1="270.1" y1="287.5" x2="270.1" y2="296.5" stroke="var(--accent)" stroke-width="1.3" opacity=".6"/>
+  <circle cx="259.4" cy="292" r="5.6" fill="var(--accent)"><title>STAG (GNN) · 0.5547 ± 0.0264 (3 init)</title></circle>
+  <circle cx="252.7" cy="292" r="4.4" fill="var(--warn)"><title>Contacts (RF) · 0.5471 ± 0.0000 (3 init)</title></circle>
+  <line x1="255.9" y1="292" x2="270.5" y2="292" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <line x1="255.9" y1="287.5" x2="255.9" y2="296.5" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <line x1="270.5" y1="287.5" x2="270.5" y2="296.5" stroke="var(--good)" stroke-width="1.3" opacity=".6"/>
+  <circle cx="262.4" cy="292" r="4.4" fill="var(--good)"><title>CNN_3D (voxel) · 0.5581 ± 0.0167 (3 init)</title></circle>
+  <path d="M 303.1 286 L 308.6 292 L 303.1 298 L 297.6 292 Z" fill="none" stroke="var(--accent)" stroke-width="1.7"><title>ensemble 9 สมาชิก · 0.6048</title></path>
+  <text x="660" y="296" fill="var(--bad)" font-size="12" font-weight="600" font-family="var(--mono)">0.605</text>
+  <line x1="168" y1="318" x2="648" y2="318" stroke="var(--ink)" stroke-width="1"/>
+  <line x1="211.6" y1="318" x2="211.6" y2="323" stroke="var(--ink)"/>
+  <text x="211.6" y="337" fill="var(--muted)" font-size="10.5" text-anchor="middle" font-family="var(--mono)">0.50</text>
+  <line x1="298.9" y1="318" x2="298.9" y2="323" stroke="var(--ink)"/>
+  <text x="298.9" y="337" fill="var(--muted)" font-size="10.5" text-anchor="middle" font-family="var(--mono)">0.60</text>
+  <line x1="386.2" y1="318" x2="386.2" y2="323" stroke="var(--ink)"/>
+  <text x="386.2" y="337" fill="var(--muted)" font-size="10.5" text-anchor="middle" font-family="var(--mono)">0.70</text>
+  <line x1="473.5" y1="318" x2="473.5" y2="323" stroke="var(--ink)"/>
+  <text x="473.5" y="337" fill="var(--muted)" font-size="10.5" text-anchor="middle" font-family="var(--mono)">0.80</text>
+  <line x1="560.7" y1="318" x2="560.7" y2="323" stroke="var(--ink)"/>
+  <text x="560.7" y="337" fill="var(--muted)" font-size="10.5" text-anchor="middle" font-family="var(--mono)">0.90</text>
+  <line x1="648.0" y1="318" x2="648.0" y2="323" stroke="var(--ink)"/>
+  <text x="648.0" y="337" fill="var(--muted)" font-size="10.5" text-anchor="middle" font-family="var(--mono)">1.00</text>
+  <text x="408" y="355" fill="var(--muted)" font-size="11" text-anchor="middle">ROC-AUC</text>
+</svg>
+<figcaption>สามชุดล่างสุดเกาะกลุ่มกันแน่นที่เส้นเดาสุ่ม — สามวิธีที่ไม่แชร์วิธีมองข้อมูลกันเลย ได้ผลเท่ากัน
+และ ensemble (◇) ก็ยังอยู่ในกลุ่มเดียวกัน · Contacts ไม่มีขีด error bar เพราะแกว่ง ±0.000</figcaption>
+</figure>
+
+<div class="scroll">
+<table>
+<thead><tr><th>ชุด</th><th>complexes</th><th>pos %</th>
+<th>STAG</th><th>Contacts</th><th>CNN_3D</th><th>ดีสุด</th><th>t</th><th>ชนะที่ 2</th></tr></thead>
+<tbody>
+<tr><td>ELAGIGILTV</td><td>1,339</td><td>27.6</td><td class="me">0.9178</td><td>0.8520</td><td>0.8940</td><td>STAG</td><td>+5.07</td><td style="color:var(--good)">มีนัย</td></tr>
+<tr><td>RAKFKQLL</td><td>1,884</td><td>27.5</td><td class="me">0.7898</td><td>0.7267</td><td>0.7532</td><td>STAG</td><td>+5.43</td><td style="color:var(--good)">มีนัย</td></tr>
+<tr><td>GILGFVFTL</td><td>2,281</td><td>25.8</td><td class="me">0.7891</td><td>0.6939</td><td>0.7446</td><td>STAG</td><td>+6.72</td><td style="color:var(--good)">มีนัย</td></tr>
+<tr><td>GLCTLVAML</td><td>509</td><td>18.9</td><td>0.7377</td><td>0.7394</td><td class="me">0.8068</td><td>CNN_3D</td><td>+2.54</td><td style="color:var(--muted)">ไม่มีนัย</td></tr>
+<tr><td>IVTDFSVIK</td><td>335</td><td>26.6</td><td class="me">0.6818</td><td>0.6190</td><td>0.6341</td><td>STAG</td><td>+0.76</td><td style="color:var(--muted)">ไม่มีนัย</td></tr>
+<tr><td>NLVPMVATV</td><td>964</td><td>25.1</td><td class="me">0.6060</td><td>0.5489</td><td>0.5683</td><td>STAG</td><td>+2.66</td><td style="color:var(--muted)">ไม่มีนัย</td></tr>
+<tr><td>AVFDRKSDAK</td><td>875</td><td>25.1</td><td>0.5556</td><td>0.5204</td><td class="me">0.5822</td><td>CNN_3D</td><td>+1.16</td><td style="color:var(--muted)">ไม่มีนัย</td></tr>
+<tr><td>KLGGALQAK</td><td>1,156</td><td>31.7</td><td>0.5532</td><td>0.5471</td><td class="me">0.5580</td><td>CNN_3D</td><td>+0.31</td><td style="color:var(--muted)">ไม่มีนัย</td></tr>
+</tbody>
+</table>
+</div>
+<p class="prov">คอลัมน์ <code>t</code> = paired t ของวิธีที่ดีสุดเทียบวิธีที่สอง คิดราย fold ทั้ง 5 fold
+· <b>การจับคู่ราย fold ใช้ได้เพราะ runner ของเรา seed เท่ากัน ไม่ใช่เพราะ fold มากับไฟล์ข้อมูล</b> —
+โค้ดเขาสุ่ม fold ขึ้นใหม่ทุกครั้งด้วย <code>np.random.randint</code> และ<b>ไม่ได้ seed</b>
+เราใส่ seed เดียวกันทุกโปรเซส และขั้นตอน encode ไม่กิน random stream ทั้งสามวิธีจึงได้ fold ชุดเดียวกัน
+(หมายความว่า<b>การเทียบข้ามวิธีของ upstream เองไม่ได้จับคู่ fold</b>)
+· เกณฑ์ |t| &gt; 2.776 คือ p &lt; 0.05 ที่ df = 4</p>
+
+<h2>STAG เทียบ CNN_3D ตัวต่อตัว</h2>
+<p class="lede">วิธีที่ต่างกันที่สุดในสามตัว — GNN บนกราฟอะตอม เทียบ CNN บน occupancy grid</p>
+
+<div class="scroll">
+<table>
+<thead><tr><th>ชุด</th><th>STAG</th><th>CNN_3D</th><th>ต่าง</th><th>t</th><th>สรุป</th></tr></thead>
+<tbody>
+<tr><td>ELAGIGILTV</td><td>0.9178</td><td>0.8940</td><td>-0.0238</td><td>-5.07</td><td style="text-align:left">STAG ดีกว่า</td></tr>
+<tr><td>RAKFKQLL</td><td>0.7898</td><td>0.7532</td><td>-0.0367</td><td>-5.43</td><td style="text-align:left">STAG ดีกว่า</td></tr>
+<tr><td>GILGFVFTL</td><td>0.7891</td><td>0.7446</td><td>-0.0445</td><td>-6.72</td><td style="text-align:left">STAG ดีกว่า</td></tr>
+<tr><td>GLCTLVAML</td><td>0.7377</td><td>0.8068</td><td>+0.0690</td><td>+1.97</td><td style="text-align:left">เท่ากัน — ความต่างอยู่ในระดับสัญญาณรบกวน</td></tr>
+<tr><td>IVTDFSVIK</td><td>0.6818</td><td>0.6341</td><td>-0.0477</td><td>-0.76</td><td style="text-align:left">เท่ากัน — ความต่างอยู่ในระดับสัญญาณรบกวน</td></tr>
+<tr><td>NLVPMVATV</td><td>0.6060</td><td>0.5683</td><td>-0.0377</td><td>-2.66</td><td style="text-align:left">เท่ากัน — ความต่างอยู่ในระดับสัญญาณรบกวน</td></tr>
+<tr><td>AVFDRKSDAK</td><td>0.5556</td><td>0.5822</td><td>+0.0266</td><td>+1.16</td><td style="text-align:left">เท่ากัน — ความต่างอยู่ในระดับสัญญาณรบกวน</td></tr>
+<tr><td>KLGGALQAK</td><td>0.5532</td><td>0.5580</td><td>+0.0048</td><td>+0.31</td><td style="text-align:left">เท่ากัน — ความต่างอยู่ในระดับสัญญาณรบกวน</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note">
+<b>GLCTLVAML คือกรณีที่ต้องระวัง</b> — CNN_3D ได้ 0.8068 เทียบ STAG 0.7377
+ต่างกัน +0.0690 ซึ่งดูเยอะ แต่ paired t = +1.97 <b>ยังไม่ถึงเกณฑ์ 2.776</b>
+เพราะ fold ของชุดนี้แกว่งเอง sd = 0.083 (ชุดเล็กสุดอันดับสอง 509 complexes)
+ความต่างนี้ยัง<b>แยกออกจากสัญญาณรบกวนไม่ได้</b> ถ้าจะเชื่อต้องรันซ้ำด้วย seed อื่นอีกหลายรอบก่อน
+</div>
+
+<h2>ความแกว่งจากการสุ่มค่าเริ่มต้น — error bar ที่วัดเอง</h2>
+<p class="lede">รันซ้ำ 3 รอบ ตรึง fold ไว้เหมือนเดิมทุกรอบ เปลี่ยนแค่ seed ของ <code>torch</code> ·
+ตัวเลขคือค่าเฉลี่ย ± ช่วงกว้างสุดระหว่าง init</p>
+
+<div class="scroll">
+<table>
+<thead><tr><th>ชุด</th><th>STAG</th><th>Contacts</th><th>CNN_3D</th><th>แกว่งมากสุด</th></tr></thead>
+<tbody>
+<tr><td>ELAGIGILTV</td><td style="white-space:nowrap">0.916 <span style="color:var(--muted)">±0.003</span></td><td style="white-space:nowrap">0.852 <span style="color:var(--muted)">±0.000</span></td><td style="white-space:nowrap">0.895 <span style="color:var(--muted)">±0.012</span></td><td>0.012</td></tr>
+<tr><td>RAKFKQLL</td><td style="white-space:nowrap">0.791 <span style="color:var(--muted)">±0.012</span></td><td style="white-space:nowrap">0.727 <span style="color:var(--muted)">±0.000</span></td><td style="white-space:nowrap">0.755 <span style="color:var(--muted)">±0.011</span></td><td>0.012</td></tr>
+<tr><td>GILGFVFTL</td><td style="white-space:nowrap">0.793 <span style="color:var(--muted)">±0.015</span></td><td style="white-space:nowrap">0.694 <span style="color:var(--muted)">±0.000</span></td><td style="white-space:nowrap">0.739 <span style="color:var(--muted)">±0.020</span></td><td>0.020</td></tr>
+<tr><td>GLCTLVAML</td><td style="white-space:nowrap">0.757 <span style="color:var(--muted)">±0.017</span></td><td style="white-space:nowrap">0.739 <span style="color:var(--muted)">±0.000</span></td><td style="white-space:nowrap">0.805 <span style="color:var(--muted)">±0.029</span></td><td>0.029</td></tr>
+<tr><td>IVTDFSVIK</td><td style="white-space:nowrap">0.683 <span style="color:var(--muted)">±0.005</span></td><td style="white-space:nowrap">0.619 <span style="color:var(--muted)">±0.000</span></td><td style="white-space:nowrap">0.655 <span style="color:var(--muted)">±0.055</span></td><td>0.055</td></tr>
+<tr><td>NLVPMVATV</td><td style="white-space:nowrap">0.606 <span style="color:var(--muted)">±0.014</span></td><td style="white-space:nowrap">0.549 <span style="color:var(--muted)">±0.000</span></td><td style="white-space:nowrap">0.580 <span style="color:var(--muted)">±0.003</span></td><td>0.014</td></tr>
+<tr><td>AVFDRKSDAK</td><td style="white-space:nowrap">0.544 <span style="color:var(--muted)">±0.018</span></td><td style="white-space:nowrap">0.520 <span style="color:var(--muted)">±0.000</span></td><td style="white-space:nowrap">0.571 <span style="color:var(--muted)">±0.022</span></td><td>0.022</td></tr>
+<tr><td>KLGGALQAK</td><td style="white-space:nowrap">0.555 <span style="color:var(--muted)">±0.026</span></td><td style="white-space:nowrap">0.547 <span style="color:var(--muted)">±0.000</span></td><td style="white-space:nowrap">0.558 <span style="color:var(--muted)">±0.017</span></td><td>0.026</td></tr><tr style="border-top:2px solid var(--ink)"><td style="font-family:var(--sans);font-weight:700">เฉลี่ย</td><td style="font-weight:600">0.706 <span style="color:var(--muted)">±0.014</span></td><td style="font-weight:600">0.656 <span style="color:var(--muted)">±0.000</span></td><td style="font-weight:600">0.695 <span style="color:var(--muted)">±0.021</span></td><td style="font-weight:600">0.024</td></tr>
+</tbody>
+</table>
+</div>
+<p class="prov">Contacts ได้ <b>±0.000 ทุกชุด</b> เพราะเป็น RandomForest ที่ถูก seed ครบตั้งแต่ต้น —
+ข้อนี้เป็นตัวยืนยันว่าการตรึง fold ทำงานจริง และที่แกว่งคือค่าเริ่มต้นของ neural network เท่านั้น
+· <b>ก่อนหน้านี้เราเคยรายงาน noise floor ว่า 0.014 AUC จากการรันเทียบกันสองรอบ ซึ่งต่ำเกินจริง</b>
+เพราะรอบนั้น <code>torch.manual_seed</code> ไม่เคยถูกเรียก ตารางนี้คือค่าที่ถูกต้อง
+· ชุดเล็กแกว่งมากกว่าชุดใหญ่อย่างเป็นระบบ</p>
+
+<h2>วัดจริงแล้ว ensemble ได้เท่าไร</h2>
+<p class="lede">ไม่ใช่ค่าประมาณ — ดึง prediction ราย sample ออกมาจากทั้ง 9 สมาชิก
+(3 วิธี × 3 init) แล้วรวมกันจริงใน fold เดียวกัน ด้วยกฎการรวม 4 แบบ</p>
+
+<div class="scroll">
+<table>
+<thead><tr><th>ชุด</th><th>HLA</th><th>สมาชิกเดี่ยว<br>ที่ดีที่สุด</th>
+<th style="background:var(--accent-soft)">ถ่วงน้ำหนัก d&prime;</th><th>stacking</th>
+<th>เฉลี่ยเท่ากัน</th><th>เลือกตัวที่<br>มั่นใจสุด</th><th>d&prime; ได้เพิ่ม</th><th>t</th></tr></thead>
+<tbody>
+<tr><td>ELAGIGILTV</td><td style="font-family:var(--mono);font-size:.78rem;color:var(--muted)">A*02:01</td><td>0.917</td><td>0.918</td><td>0.922</td><td>0.916</td><td>0.914</td><td style="color:var(--good)">+0.000</td><td>+0.11</td></tr>
+<tr><td>RAKFKQLL</td><td style="font-family:var(--mono);font-size:.78rem;color:var(--muted)">B*08:01</td><td>0.797</td><td>0.794</td><td>0.801</td><td>0.791</td><td>0.784</td><td style="color:var(--bad)">-0.002</td><td>-0.29</td></tr>
+<tr><td>GILGFVFTL</td><td style="font-family:var(--mono);font-size:.78rem;color:var(--muted)">A*02:01</td><td>0.801</td><td style="color:var(--bad);font-weight:600">0.789<sup>▼</sup></td><td>0.800</td><td style="color:var(--bad);font-weight:600">0.781<sup>▼</sup></td><td style="color:var(--bad);font-weight:600">0.770<sup>▼</sup></td><td style="color:var(--bad)">-0.012</td><td>-4.27</td></tr>
+<tr><td>GLCTLVAML</td><td style="font-family:var(--mono);font-size:.78rem;color:var(--muted)">A*02:01</td><td>0.818</td><td>0.841</td><td>0.836</td><td>0.839</td><td>0.769</td><td style="color:var(--good)">+0.023</td><td>+1.30</td></tr>
+<tr><td>IVTDFSVIK</td><td style="font-family:var(--mono);font-size:.78rem;color:var(--muted)">A*11:01</td><td>0.690</td><td>0.723</td><td>0.720</td><td>0.712</td><td>0.698</td><td style="color:var(--good)">+0.033</td><td>+2.51</td></tr>
+<tr><td>NLVPMVATV</td><td style="font-family:var(--mono);font-size:.78rem;color:var(--muted)">A*02:01</td><td>0.614</td><td>0.640</td><td>0.633</td><td>0.620</td><td style="color:var(--bad);font-weight:600">0.587<sup>▼</sup></td><td style="color:var(--good)">+0.026</td><td>+1.82</td></tr>
+<tr><td>AVFDRKSDAK</td><td style="font-family:var(--mono);font-size:.78rem;color:var(--muted)">A*11:01</td><td>0.582</td><td style="color:var(--good);font-weight:600">0.602<sup>▲</sup></td><td>0.590</td><td>0.578</td><td>0.569</td><td style="color:var(--good)">+0.020</td><td>+2.84</td></tr>
+<tr><td>KLGGALQAK</td><td style="font-family:var(--mono);font-size:.78rem;color:var(--muted)">A*03:01</td><td>0.567</td><td style="color:var(--good);font-weight:600">0.605<sup>▲</sup></td><td>0.591</td><td style="color:var(--good);font-weight:600">0.600<sup>▲</sup></td><td>0.538</td><td style="color:var(--good)">+0.037</td><td>+4.01</td></tr>
+<tr style="border-top:2px solid var(--ink)"><td style="font-family:var(--sans);font-weight:600">เฉลี่ย 8 ชุด</td><td></td><td style="font-weight:600">0.723</td><td style="font-weight:600">0.739</td><td style="font-weight:600">0.737</td><td style="font-weight:600">0.730</td><td style="font-weight:600">0.704</td><td style="color:var(--accent);font-weight:600">+0.016</td><td></td></tr>
+<tr style="border-top:2px solid var(--ink)"><td style="font-family:var(--sans);font-weight:700">เฉลี่ย 5 ชุดที่ label เชื่อได้</td><td></td><td style="font-weight:700">0.789</td><td style="font-weight:700">0.796</td><td style="font-weight:700">0.799</td><td style="font-weight:700">0.790</td><td style="font-weight:700">0.765</td><td style="color:var(--accent);font-weight:700">+0.007</td><td></td></tr>
+</tbody>
+</table>
+</div>
+<p class="prov">ก่อนรวมต้องแปลงคะแนนเป็น rank ในแต่ละ fold เพราะ Contacts คืนค่าความน่าจะเป็น 0–1
+แต่ STAG กับ CNN_3D คืน logit ดิบ (ใช้ <code>BCEWithLogitsLoss</code> ไม่ผ่าน sigmoid) — เอามาเฉลี่ยตรงๆ ไม่ได้
+· <b>▲ / ▼</b> = ดีกว่า / แย่กว่าสมาชิกเดี่ยวที่ดีที่สุดอย่างมีนัยสำคัญ (paired t ราย fold, |t| &gt; 2.776)
+· <b>"เลือกตัวที่มั่นใจสุด" เป็นกฎที่แย่ที่สุดในสี่กฎ</b> (0.704 เทียบ 0.739)
+ซึ่งตรงกับที่ Kittler และคณะ (1998) พิสูจน์ไว้ว่ากฎ max ไม่ทนสัญญาณรบกวนที่สุด —
+เพราะมันเชื่อสมาชิกตัวเดียวที่เผอิญมั่นใจเกินจริง ขณะที่กฎซึ่งใช้ทุกสมาชิกช่วยเฉลี่ยความผิดพลาดออก</p>
+
+<div class="note">
+<b>คำตอบของคำถามที่โอ๊ตถาม</b> — ที่ทำอยู่คือ<b>แบบที่สอง</b> คือเอาคะแนนความมั่นใจของทุกวิธีมารวมกันแล้วตัดสิน
+ไม่ใช่หยิบคำตอบของวิธีที่มั่นใจที่สุดมาตอบ · และเราทดสอบแบบแรกให้แล้วด้วย (คอลัมน์ "เลือกตัวที่มั่นใจสุด")
+<b>ผลคือมันแย่กว่าทุกกฎ</b> ต่ำกว่าแบบที่ใช้อยู่ 0.036 AUC
+และแย่กว่าสมาชิกเดี่ยวที่ดีที่สุดในหลายชุด — ดังนั้นไม่ต้องเปลี่ยนไปใช้
+</div>
+
+<h2>เทียบกับที่ทำนายไว้ล่วงหน้าด้วยโมเดล binormal</h2>
+<p class="lede">ตารางนี้คำนวณไว้<b>ก่อน</b>จะมี prediction ราย sample — ใช้เทียบว่าการประมาณแม่นแค่ไหน</p>
+
+<div class="scroll">
+<table>
+<thead><tr><th>ชุด</th><th>ดีสุดเดี่ยว</th><th>รวม 3 วิธี<br>(ρ=0.5 สมจริง)</th>
+<th>รวม 3 วิธี<br>(ρ=0 ดีเกินจริง)</th><th>ได้เพิ่ม</th><th>เกณฑ์ 0.75</th>
+<th>วิธีที่ 2<br>ต้องได้เอง</th></tr></thead>
+<tbody>
+<tr><td>ELAGIGILTV</td><td>0.9178</td><td>0.9386</td><td>0.9839</td><td>+0.0208</td><td style="color:var(--good);font-weight:600">ผ่าน</td><td>—</td></tr>
+<tr><td>RAKFKQLL</td><td>0.7898</td><td>0.8102</td><td>0.8882</td><td>+0.0204</td><td style="color:var(--good);font-weight:600">ผ่าน</td><td>—</td></tr>
+<tr><td>GILGFVFTL</td><td>0.7891</td><td>0.8040</td><td>0.8760</td><td>+0.0150</td><td style="color:var(--good);font-weight:600">ผ่าน</td><td>—</td></tr>
+<tr><td>GLCTLVAML</td><td>0.8068</td><td>0.8196</td><td>0.8946</td><td>+0.0128</td><td style="color:var(--good);font-weight:600">ผ่าน</td><td>—</td></tr>
+<tr><td>IVTDFSVIK</td><td>0.6818</td><td>0.6879</td><td>0.7447</td><td>+0.0061</td><td style="color:var(--bad);font-weight:600">ไม่ผ่าน</td><td>0.685</td></tr>
+<tr><td>NLVPMVATV</td><td>0.6060</td><td>0.6079</td><td>0.6338</td><td>+0.0019</td><td style="color:var(--bad);font-weight:600">ไม่ผ่าน</td><td>0.732</td></tr>
+<tr><td>AVFDRKSDAK</td><td>0.5822</td><td>0.5894</td><td>0.6008</td><td>+0.0072</td><td style="color:var(--bad);font-weight:600">ไม่ผ่าน</td><td>0.739</td></tr>
+<tr><td>KLGGALQAK</td><td>0.5580</td><td>0.5655</td><td>0.5912</td><td>+0.0074</td><td style="color:var(--bad);font-weight:600">ไม่ผ่าน</td><td>0.745</td></tr>
+</tbody>
+</table>
+</div>
+<p class="prov">ρ = สหสัมพันธ์ของความผิดพลาดระหว่างวิธี · ρ=0 คือสมมติว่าทั้งสามวิธีผิดไม่พร้อมกันเลย
+ซึ่งเป็นไปไม่ได้เพราะทั้งสามอ่านโครงสร้างชุดเดียวกัน จึงเป็น<b>เพดานบน</b> ไม่ใช่ค่าคาดหมาย
+· คอลัมน์สุดท้าย = AUC ที่วิธีที่สองต้องทำได้<b>ด้วยตัวเอง</b> เพื่อดันชุดนั้นถึง 0.75 ในกรณีดีที่สุด (ρ=0)</p>
+
+<div class="note">
+<b>ข้อจำกัดที่ตัวเลขชุดนี้บอก</b> — จะดัน KLGGALQAK จาก 0.558
+ไปถึง 0.75 วิธีที่สองต้องทำได้ <b>0.745 ด้วยตัวเองอยู่แล้ว</b>
+แปลว่าถ้ามีวิธีที่ทำได้ขนาดนั้น ก็ไม่ต้องทำ ensemble ตั้งแต่แรก — ใช้วิธีนั้นตัวเดียวจบ
+<b>ensemble ขยายสัญญาณที่มีอยู่ได้ แต่สร้างสัญญาณที่ไม่มีใครหาเจอขึ้นมาไม่ได้</b>
+</div>
+
+<h2>ข้อบกพร่องของข้อมูลสองข้อ ที่เปลี่ยนวิธีอ่านทุกตัวเลขในหน้านี้</h2>
+<p class="lede">เจอตอนตรวจว่าโมเดลแบบ nearest-neighbour จะได้แต้มฟรีจากการจำหรือไม่ · ตรวจก่อนเชื่อผล</p>
+
+<div class="note">
+<b>1 · input เหมือนกันบิตต่อบิต แต่ label ตรงกันข้าม</b><br>
+มีคู่ TCR α+β ที่ลำดับเหมือนกันเป๊ะอยู่ในทุกชุดข้อมูล และ<b>ทุกกลุ่มที่ซ้ำเป็นคู่ (negative, positive)</b> —
+GILGFVFTL 103 คู่ · RAKFKQLL 81 · KLGGALQAK 43 · ELAGIGILTV 42 · AVFDRKSDAK 20 · NLVPMVATV 19
+· GLCTLVAML 3 · IVTDFSVIK 1<br>
+นี่คือ<b>หลักฐานตรงๆ ว่ามี label noise ไม่ต้องสมมติอะไรเลย</b> เพราะไม่มีฟังก์ชันใดให้คำตอบต่างกันได้
+จาก input ที่เหมือนกัน<br>
+<b>แต่ห้ามเอาไปอ้างเป็นเพดาน</b> — 103 คู่ที่ถูกบังคับให้เสมอ จากการเทียบ positive-negative ราว 10⁶ คู่
+มีผลต่อ AUC ระดับ 0.00005 เท่านั้น มันบอกว่า noise <i>มีอยู่</i> ไม่ได้บอกว่า <i>มีเท่าไร</i>
+</div>
+
+<div class="note bad-note">
+<b>2 · negative ถูกสร้างจาก positive ของ peptide อื่น — ถ้าเทรนรวมทุก peptide จะรั่วมหาศาล</b><br>
+52.8% ของ 9,343 แถว (4,931 แถว) มี TCR ที่ปรากฏในชุดข้อมูลอื่นด้วย · TCR ที่ไม่ซ้ำกัน 2,000 จาก 6,297 ตัว
+(31.8%) อยู่มากกว่าหนึ่งชุด<br>
+pattern ของ label ชี้ชัด: ในกลุ่ม TCR ที่ปรากฏ 3 ชุด มี 386 ตัวที่เป็น positive <b>ชุดเดียว</b>
+และ 132 ตัวที่ไม่เป็น positive เลย — <b>มีแค่ 1 ตัวที่เป็น positive สองชุด</b>
+แปลว่า negative ถูกผลิตโดยการจับ TCR ที่ยืนยันแล้วว่าจับ peptide X ไปใส่คู่กับ peptide Y<br>
+<b>ผลที่ตามมา</b> — ถ้าเทรนรวมทุก peptide แบบไม่ระวัง โมเดลจะเรียนว่า "TCR ตัวนี้ไปจับอย่างอื่น
+เพราะฉะนั้นเป็น negative ของชุดนี้" แล้วตอบ test fold ถูกโดยไม่ต้องเรียนชีววิทยาเลย
+<b>นี่คือกับดักที่วิธี pan-then-fine-tune ของ NetTCR 2.2 จะเดินเข้าไปตรงๆ</b> และจะให้ตัวเลขปลอมระดับ ~0.9<br>
+<b>ทดสอบแล้วด้วยการกันรั่ว</b> — เทรนรวมทุก peptide โดย<b>ตัด TCR ทุกตัวที่ปรากฏในชุดเป้าหมายออกจากข้อมูลเสริม
+ไม่ว่าจะ fold ไหนหรือ label อะไร</b> แล้วให้ inner-CV ตัดสินว่าจะใช้ข้อมูลเสริมด้วยน้ำหนักเท่าไร
+(0 / 0.3 / 1.0) · <b>inner-CV เลือกน้ำหนัก 0 ทุก fold ทุกชุด</b> คือโมเดลเลือกจะไม่ใช้มันเอง
+— <b>เมื่อปิดรูรั่วแล้ว การเทรนรวมไม่เหลือประโยชน์</b> ความหวังของวิธีนี้ในชุดข้อมูลนี้มาจากการรั่ว
+ไม่ใช่การถ่ายโอนความรู้<br>
+<b>และโจทย์นี้ไม่ใช่ "binder เทียบ repertoire ทั่วไป" แต่เป็น "แยก binder ของ X ออกจาก binder ของ Y และ Z"</b>
+ซึ่งยากกว่าและมีเพดานต่ำกว่า ต้องเขียนกำกับไว้ทุกครั้งที่อ้างตัวเลขพวกนี้
+</div>
+
+<h2>เทียบกับตัวเลขที่ตีพิมพ์ไว้</h2>
+<p class="lede">เปเปอร์ต้นทาง (Slone et al., IEEE TCBBIO 22(1):171–179, 2025) ลงผลรายชุดไว้<b>เป็นรูปที่ 4a
+ไม่ใช่ตาราง</b> · ตารางตัวเลขเดียวในเปเปอร์คืองาน pan-peptide (EVTConv 0.791)</p>
+
+<div class="note">
+<b>ค่าสองคอลัมน์แรกอ่านมาจากกราฟแท่ง</b> ที่เรนเดอร์ที่ 400 dpi จึงคลาด ±0.01–0.02 ·
+เป็น<b>ตัวเลขชุดเดียวในหน้านี้ที่ไม่ได้คำนวณเอง</b> ที่เหลือทุกตัวมาจากไฟล์ผลลัพธ์<br>
+<b>และสถิติไม่ตรงกัน</b> — เปเปอร์รายงาน <b>median</b> ของ repeated cross-validation ส่วนหน้านี้รายงาน
+<b>mean</b> ของ fold มาตลอด · คอลัมน์ median จึงใส่ไว้ให้เทียบแบบเดียวกัน ไม่ได้ใส่เพื่อเลือกเลขที่สวยกว่า
+(ทั้งสองค่ามาจาก prediction ชุดเดียวกัน)
+</div>
+
+<div class="scroll">
+<table>
+<thead><tr><th>ชุด</th><th>HLA</th><th>STAG evt<br>(รูป 4a)</th><th>แท่งที่สูงสุดในรูป</th>
+<th>หน้านี้<br>(mean)</th><th>หน้านี้<br>(median)</th><th>ต่างจากแท่งสูงสุด</th></tr></thead>
+<tbody>
+<tr><td>ELAGIGILTV</td><td style="color:var(--muted)">A*02:01</td><td style="color:var(--muted)">0.920</td><td>0.920<span style="color:var(--muted);font-size:.7rem"> STAG evt / trans / NetTCR 2.2*</span></td><td style="font-weight:600">0.936</td><td>0.937</td><td><span style="color:var(--good)">+0.016</span></td></tr>
+<tr><td>RAKFKQLL</td><td style="color:var(--muted)">B*08:01</td><td style="color:var(--muted)">0.790</td><td>0.800<span style="color:var(--muted);font-size:.7rem"> NetTCR 2.2*</span></td><td style="font-weight:600">0.826</td><td>0.833</td><td><span style="color:var(--good);font-weight:700">+0.026</span></td></tr>
+<tr><td>GILGFVFTL</td><td style="color:var(--muted)">A*02:01</td><td style="color:var(--muted)">0.780</td><td>0.785<span style="color:var(--muted);font-size:.7rem"> NetTCR 2.2*</span></td><td style="font-weight:600">0.821</td><td>0.819</td><td><span style="color:var(--good);font-weight:700">+0.036</span></td></tr>
+<tr><td>GLCTLVAML</td><td style="color:var(--muted)">A*02:01</td><td style="color:var(--muted)">0.785</td><td>0.785<span style="color:var(--muted);font-size:.7rem"> STAG evt / NetTCR 2.2* / ERGO II AE</span></td><td style="font-weight:600">0.842</td><td>0.840</td><td><span style="color:var(--good);font-weight:700">+0.057</span></td></tr>
+<tr><td>IVTDFSVIK</td><td style="color:var(--muted)">A*11:01</td><td style="color:var(--muted)">0.705</td><td>0.705<span style="color:var(--muted);font-size:.7rem"> STAG evt</span></td><td style="font-weight:600">0.739</td><td>0.724</td><td><span style="color:var(--good);font-weight:700">+0.034</span></td></tr>
+<tr><td>NLVPMVATV</td><td style="color:var(--muted)">A*02:01</td><td style="color:var(--muted)">0.640</td><td>0.655<span style="color:var(--muted);font-size:.7rem"> NetTCR 2.2*</span></td><td style="font-weight:600">0.695</td><td>0.700</td><td><span style="color:var(--good);font-weight:700">+0.040</span></td></tr>
+<tr><td>AVFDRKSDAK</td><td style="color:var(--muted)">A*11:01</td><td style="color:var(--muted)">0.560</td><td>0.570<span style="color:var(--muted);font-size:.7rem"> 3D-CNN</span></td><td style="font-weight:600">0.588</td><td>0.596</td><td><span style="color:var(--good)">+0.018</span></td></tr>
+<tr><td>KLGGALQAK</td><td style="color:var(--muted)">A*03:01</td><td style="color:var(--muted)">0.535</td><td>0.570<span style="color:var(--muted);font-size:.7rem"> NetTCR 2.2*</span></td><td style="font-weight:600">0.599</td><td>0.578</td><td><span style="color:var(--good);font-weight:700">+0.029</span></td></tr><tr style="border-top:2px solid var(--ink)"><td style="font-family:var(--sans);font-weight:700">เฉลี่ย 8 ชุด</td><td></td><td style="color:var(--muted);font-weight:600">0.714</td><td style="font-weight:600">0.724</td><td style="color:var(--accent);font-weight:700">0.756</td><td style="font-weight:600">0.753</td><td style="font-weight:700">+0.032</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note good-note">
+<b>สูงกว่าทุกแท่งที่ตีพิมพ์ ทั้ง 8 จาก 8 ชุด</b> — เฉลี่ย +0.032
+เทียบวิธีเดี่ยวที่ดีที่สุดของเปเปอร์ และ +0.041 เทียบ STAG evt เอง ·
+ถ้าใช้ median อย่างที่เปเปอร์ใช้ ค่าเฉลี่ย 8 ชุดเป็น <b>0.753</b> และผ่านเกณฑ์ 0.75
+<b>4 ใน 8 ชุด</b> (ด้วย mean คือ 4)<br>
+<b>แต่คำพูดที่ถูกต้องคือ "ensemble เพิ่มได้ ≈+0.032 จากวิธีเดี่ยวที่ดีที่สุด"
+ไม่ใช่ "โมเดลเราชนะโมเดลเขา"</b> — กองรวมนี้<b>มีสามวิธีของเขาอยู่ข้างใน</b> และหลักฐานว่าเทียบกันได้คือ
+เรารัน STAG เองได้ตรงกับรูปของเขา (เช่น GILGFVFTL เราได้ 0.793 เขา ~0.780)
+</div>
+
+<div class="note">
+<b>แท่งที่สูงสุด 5 ใน 8 ชุดมีดอกจัน</b> — คำอธิบายรูปของเขาเขียนว่า NetTCR 2.2
+"was first trained on the pan-peptide dataset, then fine-tuned for each peptide specific dataset"
+ซึ่งคือสูตร pan-then-fine-tune ที่หน้านี้วัดแล้วว่ารั่ว เพราะ negative ของชุด pan คือ positive ของ peptide อื่น ·
+ถ้าไม่นับแท่งนั้น เส้นที่ต้องข้ามคือ STAG evt 0.714 และระยะห่างเป็น +0.041
+</div>
+
+<div class="note bad-note">
+<b>สามอย่างในหัวข้อวิธีของเปเปอร์ ที่เปลี่ยนสิ่งที่ตัวเลขชุดนี้พูดได้</b><br>
+<b>1 · ITRAP ถูกใช้แล้ว — เฉพาะฝั่ง positive</b> "TCR-pMHCs taken from the 10x genomics datasets were
+filtered according to the ITRAP algorithm" แล้วประโยคถัดมาคือ "Negative TCR-pMHC pairs were sampled from
+the 10x genomics datasets" โดยไม่มีตัวกรอง · ตัวช่วยลด noise ของ dextramer ที่ทุกคนนึกถึง
+<b>ถูกใช้ไปแล้วบนฝั่งที่ไม่ได้พัง</b> — ฝั่งที่หน้านี้วัดว่าพังคือ negative<br>
+<b>2 · positive มาจาก McPAS + VDJdb + IEDB ด้วย ไม่ใช่แค่ 10x</b> → การเอาฐานข้อมูลเหล่านั้นมา "ตรวจ label"
+วนกลับเข้าตัวเองบางส่วนโดยโครงสร้างของข้อมูล ซึ่งเป็นเหตุผลที่ต้องมีทั้งการตรวจที่มาและ guard ที่ CDR3β ·
+และทำให้ข้อสรุปเรื่อง KLGGALQAK คมขึ้น: positive ของมันต้องมาจาก 10x ล้วน
+เพราะทั้งสามฐานไม่มีเลยสักคู่<br>
+<b>3 · ตัวกรองที่เปเปอร์เขียนไว้ ไฟล์ที่แจกไม่ผ่าน</b> — "pruned so that there were no decoys with kernel
+similarity greater than 0.90 and no ground truth samples with kernel similarity greater than 0.95"
+แต่ทุกชุดยังมีคู่ CDR3 α+β ที่เหมือนกันเป๊ะ (similarity = 1.0) และ label ตรงข้าม
+รวม 398 แถวจาก 9,343
+· <b>ลองใช้กฎของเขากับชุดเทรนแล้ว ได้ -0.004 AUC</b>
+— ข้อบกพร่องมีจริงแต่แทบไม่มีราคา ตรงกับที่วัดไว้ก่อนหน้าว่ามันขยับ AUC ระดับ 0.00005
+</div>
+
+<div class="note">
+<b>งานที่สองที่อ่านด้วยกัน</b> (Abeer, Roy, Qian &amp; Yoon, npj Drug Discovery 3:31, 2026)
+<b>ไม่ได้แยกรายชุดเลย</b> — เอาชุด pan-peptide ของ STAG (345 peptide, 19,282 ตัวอย่าง ตรงกับจำนวน index
+ไม่ซ้ำที่หน้านี้นับได้ในไฟล์ 22,410 แถว) มาแบ่งเป็น 5 cluster ของ peptide ที่ไม่เคยเห็น ซึ่งเป็นโจทย์ที่ยากกว่า
+· ตัวเลขทั้งตารางของเขาอยู่ระหว่าง <b>0.40–0.68</b> รวมทั้ง Boltz-2, FoldX 5.1 และ Rosetta
+(FoldX ต่ำกว่าการเดาใน 2 cluster) และเขาเขียนเองว่าไม่มีวิธีใดใน 4 วิธีที่ขยับขึ้นจากการเดาได้อย่างมีนัยสำคัญ
+ใน cluster ที่ 5<br>
+<b>เขายังจับการรั่วแบบเดียวกับที่หน้านี้จับได้</b> — NetTCR-2.2 ดูดีที่สุดใน cluster 5 จนตัด 159 ตัวอย่างของ
+peptide ที่อยู่ในชุดเทรนของตัวมันเองออก แล้วเหลือ 0.4953 · <b>และเขารายงานว่า EGNN ทนกว่า EVTConv
+ของ STAG</b> ซึ่งเป็นสิ่งเดียวในสองเปเปอร์นี้ที่น่าจะดันคะแนนได้อีก และต้องรันบน GPU
+</div>
+
+<h2>"เฉลี่ย 8 ชุดให้ถึง 0.8" ต้องเกิดอะไรขึ้นบ้าง</h2>
+<p class="lede">เลขคณิตตรง ๆ ก่อนจะเถียงเรื่องวิธี — เพราะมันตัดทางเลือกออกไปเกือบหมดเอง</p>
+
+<div class="note">
+ตอนนี้เฉลี่ย 8 ชุด = <b>0.756</b> · 6 ชุดที่ไม่ตาย = <b>0.810</b>
+· 2 ชุดที่ตาย (AVFDRKSDAK, KLGGALQAK) = 0.594<br>
+<b>ทางที่ 1</b> — ถ้า 2 ชุดที่ตายอยู่เท่าเดิม อีก 6 ชุดต้องเฉลี่ย
+<b>0.869</b> คือต้องขึ้นอีก <b>+0.059 ต่อชุด</b>
+แปลว่า NLVPMVATV ต้องไปถึงราว 0.75
+และ IVTDFSVIK ราว 0.80 พร้อมกัน ·
+ขนาดของการขยับที่ต้องการใหญ่กว่าที่การเปลี่ยนโมเดลให้มาตลอดโปรเจกต์นี้หลายเท่า
+(สายลำดับใหม่ทั้งสายให้มา +0.017 ต่อชุดเฉลี่ย)<br>
+<b>ทางที่ 2</b> — ถ้า 6 ชุดอยู่เท่าเดิม 2 ชุดที่ตายต้องขึ้นจาก 0.594
+ไป <b>0.771</b> ซึ่งเป็นสิ่งที่ห้าตระกูลวิธีและการค้นสามฐานข้อมูลบอกตรงกันว่าทำไม่ได้
+จากข้อมูลที่มี<br>
+<b>ทางที่ 3 — รายงานชุดที่ตรวจสอบได้</b> · 6 ชุดที่ไม่ตายเฉลี่ย <b>0.810</b>
+อยู่แล้ว และ 5 ชุดที่เปเปอร์เองถือว่า label เชื่อได้เฉลี่ย <b>0.824</b> ·
+<b>นี่คือตัวเลขที่ถึง 0.8 จริงและป้องกันได้ในการรีวิว</b> โดยเขียนกำกับว่าตัดชุดไหนออกเพราะอะไร
+(ไม่มี TCR ที่ตีพิมพ์แล้วแม้คู่เดียวในสามฐานข้อมูล · ผู้เขียนเปเปอร์เองก็ตัด A*03/A*11 ออกจากชุดรวม)
+</div>
+
+<h2>ลองอะไรไปอีกบ้างเพื่อดันคะแนน</h2>
+<p class="lede">สี่สายเดิมตันแล้ว · รอบนี้เพิ่มอีกสี่ตระกูลวิธีที่<b>ต่างกันคนละแกน</b> ไม่ใช่การจูน hyperparameter
+· ทุกตัวใช้ fold เดิม เทียบกันได้ fold ต่อ fold</p>
+
+<div class="note">
+<b>1 · protein language model (ESM-2)</b> — สี่สายเดิมบรรยายตัวรับด้วย feature ที่คนออกแบบทั้งหมด
+(กราฟอะตอม · ตารางนับ contact · voxel grid · n-gram ของตัวอักษร) · ESM-2 เอาสถิติที่เรียนจากโปรตีนหลายล้านตัว
+มาแทน ซึ่งเป็นความรู้ภายนอกที่ไม่มีสายไหนมี · ฝัง V-domain ทั้งสองสายด้วย esm2_t12_35M
+(ค่าเฉลี่ยของ representation ชั้นสุดท้ายต่อ residue) แล้วต่อ logistic regression กับ cosine k-NN<br>
+<b>2 · PU learning</b> — ตามข้อบกพร่องที่วัดได้ว่า negative ปนเปื้อน: เทรน 25 ตัว แต่ละตัวใช้ positive ทั้งหมด
+เทียบ negative ที่สุ่มมาเท่าจำนวน positive แล้วเฉลี่ยอันดับ · negative ที่ปนจึงมีผลแค่ไม่กี่ตัวจาก 25
+แทนที่จะถูกเชื่อเต็มร้อย (Mordelet &amp; Vert 2014) — เป็นวิธีมาตรฐานของปัญหาที่วัดเจอ ไม่ใช่การเดา<br>
+<b>3 · เฉลี่ยแทนการเลือก</b> — SeqLR เลือก representation 1 จาก 3 แบบด้วย inner-CV บน 4 fold ซึ่งแกว่ง ·
+เฉลี่ยทั้งสามอันดับไปเลยคือการใช้ความแกว่งนั้นให้เป็นประโยชน์แทนการเดิมพันกับมัน<br>
+<b>4 · ระยะถึง binder ที่ตีพิมพ์แล้ว</b> — ไม่เทรนอะไรเลย วัด cosine similarity เฉลี่ย 3 อันดับแรก
+ไปยัง binder ที่ตีพิมพ์ของ epitope นี้ หักด้วยระยะไปยัง binder ของ epitope อื่น ·
+เป็นวิธีที่ TCRdist/GLIPH ใช้จริงกับ epitope ที่มีข้อมูลเยอะ
+</div>
+
+<div class="scroll"><table><thead><tr><th>ชุด</th><th>สายลำดับเดิม<br>ที่ดีสุด</th><th>ESM</th><th>ESMNN</th><th>PU</th><th>Avg3</th><th>NN2</th><th>Dedup</th><th>Δ ของตัวใหม่<br>ที่ดีสุด</th></tr></thead><tbody><tr><td>ELAGIGILTV</td><td style="color:var(--muted)">0.925</td><td style="white-space:nowrap">0.924<span style="color:var(--muted);font-size:.7rem"> ±0.001</span></td><td style="white-space:nowrap">0.817<span style="color:var(--muted);font-size:.7rem"> ±0.004</span></td><td class="me" style="white-space:nowrap">0.926<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.920<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.642<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.925<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td><span style="color:var(--muted)">+0.000</span></td></tr>
+<tr><td>RAKFKQLL</td><td style="color:var(--muted)">0.803</td><td class="me" style="white-space:nowrap">0.807<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.649<span style="color:var(--muted);font-size:.7rem"> ±0.009</span></td><td style="white-space:nowrap">0.802<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td style="white-space:nowrap">0.800<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td style="white-space:nowrap">0.649<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.803<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td><span style="color:var(--muted)">+0.004</span></td></tr>
+<tr><td>GILGFVFTL</td><td style="color:var(--muted)">0.797</td><td style="white-space:nowrap">0.795<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.646<span style="color:var(--muted);font-size:.7rem"> ±0.010</span></td><td class="me" style="white-space:nowrap">0.796<span style="color:var(--muted);font-size:.7rem"> ±0.001</span></td><td style="white-space:nowrap">0.792<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.725<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.791<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td><span style="color:var(--muted)">-0.001</span></td></tr>
+<tr><td>GLCTLVAML</td><td style="color:var(--muted)">0.822</td><td style="white-space:nowrap">0.788<span style="color:var(--muted);font-size:.7rem"> ±0.006</span></td><td style="white-space:nowrap">0.792<span style="color:var(--muted);font-size:.7rem"> ±0.020</span></td><td class="me" style="white-space:nowrap">0.822<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td style="white-space:nowrap">0.822<span style="color:var(--muted);font-size:.7rem"> ±0.004</span></td><td style="white-space:nowrap">0.792<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.821<span style="color:var(--muted);font-size:.7rem"> ±0.004</span></td><td><span style="color:var(--muted)">+0.000</span></td></tr>
+<tr><td>IVTDFSVIK</td><td style="color:var(--muted)">0.724</td><td style="white-space:nowrap">0.663<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.658<span style="color:var(--muted);font-size:.7rem"> ±0.023</span></td><td style="white-space:nowrap">0.678<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td class="me" style="white-space:nowrap">0.701<span style="color:var(--muted);font-size:.7rem"> ±0.003</span></td><td style="white-space:nowrap">0.531<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.678<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td><span style="color:var(--bad)">-0.023</span></td></tr>
+<tr><td>NLVPMVATV</td><td style="color:var(--muted)">0.674</td><td style="white-space:nowrap">0.658<span style="color:var(--muted);font-size:.7rem"> ±0.001</span></td><td style="white-space:nowrap">0.570<span style="color:var(--muted);font-size:.7rem"> ±0.020</span></td><td style="white-space:nowrap">0.669<span style="color:var(--muted);font-size:.7rem"> ±0.002</span></td><td style="white-space:nowrap">0.671<span style="color:var(--muted);font-size:.7rem"> ±0.001</span></td><td style="white-space:nowrap">0.605<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td class="me" style="white-space:nowrap">0.679<span style="color:var(--muted);font-size:.7rem"> ±0.007</span></td><td><span style="color:var(--muted)">+0.004</span></td></tr>
+<tr><td>AVFDRKSDAK</td><td style="color:var(--muted)">0.548</td><td style="white-space:nowrap">0.539<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.503<span style="color:var(--muted);font-size:.7rem"> ±0.001</span></td><td class="me" style="white-space:nowrap">0.567<span style="color:var(--muted);font-size:.7rem"> ±0.013</span></td><td style="white-space:nowrap">0.563<span style="color:var(--muted);font-size:.7rem"> ±0.010</span></td><td style="white-space:nowrap">0.501<span style="color:var(--muted);font-size:.7rem"> ±0.000</span></td><td style="white-space:nowrap">0.552<span style="color:var(--muted);font-size:.7rem"> ±0.018</span></td><td><span style="color:var(--good);font-weight:700">+0.019</span></td></tr>
+<tr><td>KLGGALQAK</td><td style="color:var(--muted)">0.543</td><td style="white-space:nowrap">0.555<span style="color:var(--muted);font-size:.7rem"> ±0.014</span></td><td style="white-space:nowrap">0.489<span style="color:var(--muted);font-size:.7rem"> ±0.007</span></td><td style="white-space:nowrap">0.560<span style="color:var(--muted);font-size:.7rem"> ±0.004</span></td><td class="me" style="white-space:nowrap">0.561<span style="color:var(--muted);font-size:.7rem"> ±0.007</span></td><td style="color:var(--muted)">—</td><td style="white-space:nowrap">0.545<span style="color:var(--muted);font-size:.7rem"> ±0.006</span></td><td><span style="color:var(--good);font-weight:700">+0.018</span></td></tr><tr style="border-top:2px solid var(--ink)"><td style="font-family:var(--sans);font-weight:700">เฉลี่ย</td><td style="color:var(--muted);font-weight:600">0.729</td><td style="font-weight:600">0.716</td><td style="font-weight:600">0.641</td><td style="font-weight:600">0.727</td><td style="font-weight:600">0.729</td><td style="font-weight:600">0.635<span style="color:var(--muted);font-size:.7rem"> (7 ชุด)</span></td><td style="font-weight:600">0.724</td><td></td></tr></tbody></table></div><p class="prov">"สายลำดับเดิมที่ดีสุด" = ตัวที่ดีที่สุดในสี่ตัวของสายลำดับเดิม (SeqLR / SeqGBM / SeqMLP / SeqKNN) ของชุดนั้น · ตัวหนา = ตัวใหม่ที่ดีสุดของชุดนั้น · ตัวใหม่ชนะของเดิมเกิน 0.005 ใน 2 จาก 8 ชุด: AVFDRKSDAK (PU +0.567), KLGGALQAK (Avg3 +0.561) · ที่ยังอยู่ในกองเพราะ ensemble ใช้ตัวที่ผิดคนละแบบได้ ไม่ใช่เพราะต้องชนะเดี่ยว ๆ · <b>PU กับ Avg3 วัดได้ 8 ชุดแล้วหยุด</b> (เครื่องร้อน — ดูหัวข้อ "ที่ยังไม่เสร็จ") จึงไม่ถูกนับเข้ากองรวม</p>
+
+<h2>แหล่งข้อมูลที่สอง: TCR ที่ตีพิมพ์แล้ว</h2>
+<p class="lede">ทุก label ในหน้านี้มาจากการทดลอง 10x dextramer ครั้งเดียว · รอบนี้เอา TCR ที่งานวิจัยอื่น
+ยืนยันไว้แล้วมาเป็นข้อมูลเสริม — VDJdb (release 2026-11-06) + McPAS-TCR + IEDB รวมกัน</p>
+
+<div class="note">
+<b>วิธีคัดให้เป็นหลักฐานอิสระจริง</b> — ตัดแถวที่มาจาก 10x application note (ต้นทางของ label ชุดนี้) ออกจากทั้งสามฐาน ·
+VDJdb ระบุไว้ใน <code>reference_id</code> · McPAS ไม่มีแถวนั้นอยู่เลย (ทุกแถวมี PubMed ID) ·
+IEDB เก็บไว้เป็น reference 1036521 ซึ่ง<b>ระบุได้โดยไม่ต้องเชื่อชื่อ</b> — มันเป็นแหล่งเดียวที่ IEDB มีสำหรับ
+KLGGALQAK และเป็นแหล่งที่ซ้ำกับ TCR ในชุดข้อมูลมากที่สุดในทุก epitope<br>
+<b>กันรั่วเข้มกว่าที่จำเป็น</b> — ตัด TCR ที่มี CDR3β ตรงกับแถวใดก็ได้ในชุดเป้าหมายออกทั้งหมด ไม่ว่า fold ไหน
+label อะไร (GILGFVFTL เหลือ 2,738 จาก 6,558 แถว) ·
+งานวิจัยอื่นที่เจอ β เดียวกันเองถือเป็นหลักฐานจริงไม่ใช่การรั่ว แต่ตัดทิ้งไว้ก่อน เพื่อให้ตัวเลขทนการอ่านที่เข้มที่สุด<br>
+<b>น้ำหนักข้อมูลเสริมไม่ได้ตั้งเอง</b> — inner-CV บน fold เทรนเลือกจาก 0 / 0.3 / 1.0 ·
+น้ำหนัก 0 คือตัวเดิมเป๊ะ ๆ จึงเสียคะแนนจากการเพิ่มข้อมูลนี้ไม่ได้โดยโครงสร้าง
+</div>
+
+<div class="note bad-note">
+<b>กับดักที่เกือบโดน และวิธีที่จับได้</b> — ตัด 10x application note ตามชื่อยัง<b>ไม่พอ</b> ·
+เปเปอร์รุ่นหลังรายงาน clonotype ของการทดลองเดิมซ้ำใต้ reference ของตัวเองได้ และฐานข้อมูลจะเก็บไว้ใต้ชื่อนั้น<br>
+VDJdb เก็บ TCR ของ NLVPMVATV ไว้ 181 คู่ใต้งานชิ้นเดียว
+(preprint ปี 2020) และ
+<b>159 คู่ (88%) เป็นคู่ α+β ที่ตรงกันเป๊ะกับแถวในชุดข้อมูลนี้</b>
+ขณะที่ไม่แชร์คู่กับ 10x note ที่ VDJdb curate ไว้เองแม้คู่เดียว · public clonotype แชร์กันแค่ลาย β
+ไม่ใช่คู่ α+β ทั้งคู่ — ตัวเลขระดับนี้อธิบายได้ทางเดียวคือมาจากการทดลองเดียวกัน<br>
+ก่อนตรวจ ความตรงกันระหว่าง positive ของ NLVPMVATV กับ "binder ที่ตีพิมพ์แล้ว"
+อยู่ที่ <b>97.1%</b> (วัดไว้ก่อนตัด)
+ซึ่งถ้าเชื่อ จะดัน NLVPMVATV ขึ้นประมาณ <b>+0.3 AUC แบบปลอม ๆ</b><br>
+<b>จึงตรวจทุกงานวิจัยจากข้อมูลเอง ไม่ใช่จากการอ่านเปเปอร์</b> (ext/provenance_audit.py) —
+สัดส่วนคู่ α+β ของงานนั้นที่ปรากฏเป๊ะในชุดเป้าหมาย ≥ 20%
+และมีอย่างน้อย 5 คู่ = ตัดออก · ตัดไป <b>16 รายการ</b>
+จาก 131 รายการที่ตรวจ<br>
+หลังตรวจแล้ว ความตรงกันที่เหลือเป็นแบบที่ควรเป็น — positive มีโอกาสตรงกับ β ของ binder ที่ตีพิมพ์โดยงานอิสระ
+มากกว่า negative 9–47 เท่า
+(GILGFVFTL 66/589 = 11.2%
+เทียบ negative 0.2%) แต่<b>ตรวจได้แค่ไม่กี่ % ของแถว</b>
+— label ถูกเท่าที่ตรวจได้ และตรวจได้น้อย
+</div>
+
+<div class="scroll">
+<table>
+<thead><tr><th>ชุด</th><th>HLA</th><th>TCR ที่ curate แล้ว<br>(คู่ α+β)</th><th>งานวิจัย</th>
+<th>เหลือหลัง<br>กันรั่ว</th><th>CDR3 ล้วน<br>(ตัวคุม)</th><th>+ ข้อมูลนอก</th><th>Δ</th>
+<th>ข้อมูลนอกล้วน<br>ไม่เห็นชุดนี้เลย</th><th>น้ำหนักที่เลือก<br>(10 fold)</th></tr></thead>
+<tbody>
+<tr><td>ELAGIGILTV</td><td style="color:var(--muted)">A*02:01</td><td style="font-weight:600">205</td><td style="color:var(--muted)">19</td><td>191</td><td style="color:var(--muted)">0.829</td><td>0.832</td><td><span style="color:var(--muted)">+0.003</span></td><td style="font-weight:600">0.713</td><td style="font-size:.72rem;color:var(--muted);white-space:nowrap">0.0×1, 0.3×9</td></tr>
+<tr><td>RAKFKQLL</td><td style="color:var(--muted)">B*08:01</td><td style="font-weight:600">557</td><td style="color:var(--muted)">6</td><td>555</td><td style="color:var(--muted)">0.764</td><td>0.766</td><td><span style="color:var(--muted)">+0.002</span></td><td style="font-weight:600">0.682</td><td style="font-size:.72rem;color:var(--muted);white-space:nowrap">0.0×3, 0.3×7</td></tr>
+<tr><td>GILGFVFTL</td><td style="color:var(--muted)">A*02:01</td><td style="font-weight:600">6,558</td><td style="color:var(--muted)">30</td><td>2,738</td><td style="color:var(--muted)">0.748</td><td>0.758</td><td><span style="color:var(--good);font-weight:700">+0.010</span></td><td style="font-weight:600">0.759</td><td style="font-size:.72rem;color:var(--muted);white-space:nowrap">0.3×3, 1.0×7</td></tr>
+<tr><td>GLCTLVAML</td><td style="color:var(--muted)">A*02:01</td><td style="font-weight:600">576</td><td style="color:var(--muted)">21</td><td>533</td><td style="color:var(--muted)">0.788</td><td>0.795</td><td><span style="color:var(--muted)">+0.007</span></td><td style="font-weight:600">0.792</td><td style="font-size:.72rem;color:var(--muted);white-space:nowrap">0.0×1, 0.3×1, 1.0×8</td></tr>
+<tr><td>IVTDFSVIK</td><td style="color:var(--muted)">A*11:01</td><td style="font-weight:600">37</td><td style="color:var(--muted)">3</td><td>36</td><td style="color:var(--muted)">0.707</td><td>0.700</td><td><span style="color:var(--muted)">-0.007</span></td><td style="font-weight:600">0.468</td><td style="font-size:.72rem;color:var(--muted);white-space:nowrap">0.0×7, 0.3×2, 1.0×1</td></tr>
+<tr><td>NLVPMVATV</td><td style="color:var(--muted)">A*02:01</td><td style="font-weight:600">10,025</td><td style="color:var(--muted)">33</td><td>9,986</td><td style="color:var(--muted)">0.641</td><td>0.641</td><td><span style="color:var(--muted)">-0.000</span></td><td style="font-weight:600">0.567</td><td style="font-size:.72rem;color:var(--muted);white-space:nowrap">0.0×10</td></tr>
+<tr><td>AVFDRKSDAK</td><td style="color:var(--muted)">A*11:01</td><td style="font-weight:600">36</td><td style="color:var(--muted)">3</td><td>35</td><td style="color:var(--muted)">0.539</td><td>0.534</td><td><span style="color:var(--muted)">-0.004</span></td><td style="font-weight:600">0.528</td><td style="font-size:.72rem;color:var(--muted);white-space:nowrap">0.0×4, 1.0×6</td></tr>
+<tr><td>KLGGALQAK</td><td style="color:var(--muted)">A*03:01</td><td style="font-weight:600">0</td><td style="color:var(--muted)">0</td><td>0</td><td style="color:var(--muted)">0.552</td><td>0.556</td><td><span style="color:var(--muted)">+0.005</span></td><td style="font-weight:600">—</td><td style="font-size:.72rem;color:var(--muted);white-space:nowrap">0.0×4, 0.3×6</td></tr><tr style="border-top:2px solid var(--ink)"><td style="font-family:var(--sans);font-weight:700">เฉลี่ย</td><td></td><td style="font-weight:600">2,249</td><td></td><td>1,759</td><td style="color:var(--muted);font-weight:600">0.696</td><td style="font-weight:600">0.698</td><td style="font-weight:700">+0.002</td><td style="font-weight:600">0.644<span style="color:var(--muted);font-size:.7rem"> (7 ชุด)</span></td><td></td></tr>
+</tbody>
+</table>
+</div>
+<p class="prov">คอลัมน์ "CDR3 ล้วน" คือโมเดลเดียวกันที่บังคับน้ำหนัก 0 — ใช้ feature ชุดเดียวกัน fold เดียวกัน
+เพื่อให้ Δ เป็นผลของข้อมูลที่เพิ่มเข้าไปล้วน ๆ ไม่ใช่ผลของการเปลี่ยน representation ·
+"ข้อมูลนอกล้วน" เทรนด้วยข้อมูล curate เท่านั้น ไม่เห็นแถวในชุดนี้แม้แถวเดียว แล้วเอาไปทำนาย test fold ของชุดนี้</p>
+
+<div class="note good-note">
+<b>ที่น่าสนใจที่สุดในตารางนี้คือคอลัมน์ขวาสุดก่อนน้ำหนัก</b> — โมเดลที่<b>ไม่เคยเห็นข้อมูลชุดนี้เลย</b>
+เทรนจาก TCR ที่ตีพิมพ์แล้วอย่างเดียว ทำได้ 0.644 เฉลี่ย 7 ชุด
+และ GLCTLVAML ได้ถึง 0.792
+เทียบกับโมเดลในชุดเองที่ 0.788 —
+<b>label ของชุดที่มีวรรณกรรมรองรับ ตรงกับวรรณกรรมจริง</b> นี่คือการตรวจสอบจากภายนอกที่ไม่มีทางรั่วได้เลย
+</div>
+
+<div class="note bad-note">
+<b>และนี่คือคำตอบของสองชุดที่ตาย</b> — KLGGALQAK มี
+<b>TCR ที่ตีพิมพ์แล้ว 0 คู่ ในทั้งสามฐานข้อมูล</b> (VDJdb 2026-11-06 · McPAS-TCR 40,731 แถว · IEDB 302,806 แถว)
+— ทุกฐานมีแหล่งเดียวคือ 10x application note เดิม · ส่วน
+IVTDFSVIK 37 คู่, AVFDRKSDAK 36 คู่ มีน้อยเกินกว่าจะเทรนอะไรได้<br>
+แปลว่าสำหรับ peptide เหล่านี้ <b>ไม่มีใครในโลกตีพิมพ์ TCR ที่จับมันไว้นอกจากการทดลองครั้งนั้น</b>
+จึงไม่มีทั้งข้อมูลมาเสริม และไม่มีทั้งหลักฐานอิสระว่า label ชุดนั้นถูก ·
+ส่วนELAGIGILTV, RAKFKQLL, GILGFVFTL, GLCTLVAML, NLVPMVATV มีตั้งแต่ 205
+ถึง 10,025 คู่ และนั่นคือเหตุผลที่ตัวเลขของชุดพวกนั้นเชื่อได้มากกว่า
+</div>
+
+<div class="note">
+<b>อีกทางที่ลองแล้วไม่ได้ผล: ตัด label ที่น่าสงสัยออกจากชุดเทรน</b> (confident learning) —
+ประเมินความขัดแย้งของแต่ละแถวจาก out-of-fold prediction ที่คำนวณ<b>ภายใน fold เทรนเท่านั้น</b>
+ตัดสัดส่วนที่ขัดแย้งที่สุดออก แล้วเลือกสัดส่วน (0 / 5 / 10 / 20%) ด้วย inner-CV โดยวัดกับแถวที่ไม่ได้ตัด ·
+ไม่เคยตัดอะไรออกจาก test fold<br>
+ผล: เฉลี่ย -0.001 AUC
+— <b>ไม่ช่วย</b> และเหตุผลตรงไปตรงมา: ตัวที่ใช้ตัดสินว่า label ไหนผิด คือโมเดลตัวเดิมที่อ่านชุดนั้นได้เท่าการเดา
+ความมั่นใจของมันจึงไม่มีข้อมูลเรื่อง label เลย · <b>วิธีนี้ต้องมีโมเดลที่ใช้การได้อยู่ก่อน</b>
+ซึ่งเป็นสิ่งที่สองชุดนั้นไม่มี
+</div>
+
+<h2>label ของแต่ละ peptide เชื่อได้แค่ไหน — วัดเป็นตัวเลข</h2>
+<p class="lede">ไม่ถามว่าโมเดลทำได้เท่าไร ถามว่า positive ของ peptide นั้นมีลายนิ้วมืออยู่จริงไหม ·
+ไม่แตะ negative เลย จึงไม่ขึ้นกับวิธีสร้าง negative</p>
+
+<div class="note">
+<b>วิธีวัด</b> — เอา positive ของ peptide A เป็นคลาส 1 และ positive ของ peptide B เป็นคลาส 0
+ตัด TCR ที่อยู่ทั้งสองฝั่งออก แล้ว cross-validate (28 คู่) · ถ้า positive ของ A เป็น binder จริง
+มันต้องหน้าตาไม่เหมือน positive ของ B — ยิ่ง HLA ต่างกันยิ่งต้องแยกออกง่าย เพราะ repertoire ที่ถูกจำกัดด้วย
+HLA ต่างกันใช้ V-gene ต่างกัน<br>
+<b>ผลค้านสมมติฐานที่ตั้งไว้ตอนแรก</b> — ทุกชุดแยกออกจากกันได้
+0.544–0.916
+<b>ไม่มีชุดไหนที่ label เป็น noise ล้วน</b> · และคู่ที่แยกยากสุดคือคู่ที่ HLA ใกล้กัน
+(AVFDRKSDAK–KLGGALQAK 0.544 ·
+AVFDRKSDAK–IVTDFSVIK 0.615 — A*11 กับ A*03 เป็น supertype เดียวกัน)
+ซึ่งเป็นสิ่งที่ควรเกิดถ้า label มีความหมาย
+</div>
+
+<div class="scroll">
+<table>
+<thead><tr><th>ชุด</th><th>HLA</th><th>positive</th><th>ลายนิ้วมือของ positive<br>(แยกจาก positive ชุดอื่น)</th>
+<th>ที่ทำได้จริง<br>(4 สาย, auto)</th><th>ต่าง</th><th>label ต้องผิดกี่ %<br>ถึงจะอธิบายได้</th></tr></thead>
+<tbody>
+<tr><td>ELAGIGILTV</td><td style="color:var(--muted)">A*02:01</td><td style="color:var(--muted)">370</td><td style="font-weight:600">0.888</td><td>0.936</td><td style="color:var(--muted)">+0.048</td><td><span style="color:var(--good)">5%</span></td></tr>
+<tr><td>RAKFKQLL</td><td style="color:var(--muted)">B*08:01</td><td style="color:var(--muted)">519</td><td style="font-weight:600">0.832</td><td>0.826</td><td style="color:var(--muted)">-0.006</td><td><span style="color:var(--good)">14%</span></td></tr>
+<tr><td>GILGFVFTL</td><td style="color:var(--muted)">A*02:01</td><td style="color:var(--muted)">589</td><td style="font-weight:600">0.809</td><td>0.821</td><td style="color:var(--muted)">+0.011</td><td><span style="color:var(--good)">14%</span></td></tr>
+<tr><td>GLCTLVAML</td><td style="color:var(--muted)">A*02:01</td><td style="color:var(--muted)">96</td><td style="font-weight:600">0.802</td><td>0.842</td><td style="color:var(--muted)">+0.040</td><td><span style="color:var(--good)">8%</span></td></tr>
+<tr><td>NLVPMVATV</td><td style="color:var(--muted)">A*02:01</td><td style="color:var(--muted)">242</td><td style="font-weight:600">0.749</td><td>0.695</td><td style="color:var(--muted)">-0.055</td><td>26%</td></tr>
+<tr><td>KLGGALQAK</td><td style="color:var(--muted)">A*03:01</td><td style="color:var(--muted)">367</td><td style="font-weight:600">0.722</td><td>0.599</td><td style="color:var(--muted)">-0.123</td><td><span style="color:var(--bad);font-weight:700">40%</span></td></tr>
+<tr><td>IVTDFSVIK</td><td style="color:var(--muted)">A*11:01</td><td style="color:var(--muted)">89</td><td style="font-weight:600">0.698</td><td>0.739</td><td style="color:var(--muted)">+0.041</td><td>23%</td></tr>
+<tr><td>AVFDRKSDAK</td><td style="color:var(--muted)">A*11:01</td><td style="color:var(--muted)">220</td><td style="font-weight:600">0.642</td><td>0.588</td><td style="color:var(--muted)">-0.054</td><td><span style="color:var(--bad);font-weight:700">38%</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note">
+<b>คอลัมน์สุดท้ายอ่านอย่างนี้</b> — ถ้าโมเดลสมบูรณ์แบบ (AUC จริง = 1) และ label พลิกแบบสมมาตรด้วยอัตรา ρ
+AUC ที่จะวัดได้คือ <code>a·b + ½[a(1−b) + (1−a)b]</code> โดย a = P(เป็น positive จริง | label ว่า positive)
+และ b คือคู่ตรงข้าม · ย้อนสมการกลับจาก AUC ที่วัดได้: KLGGALQAK ต้องผิด 40%
+และ AVFDRKSDAK 38% ขณะที่ ELAGIGILTV ต้องผิดแค่ 5%<br>
+<b>มันเป็นขอบเขตบน ไม่ใช่การวัด noise</b> — อีกการอ่านที่เป็นไปได้คือ "label ถูกแต่ไม่มีสัญญาณให้เรียน"
+ซึ่งสำหรับสองชุดนั้นก็นำไปสู่ข้อสรุปเดียวกัน<br>
+<b>และลายนิ้วมือทำนายเพดานได้จริง</b> — Spearman ระหว่างคอลัมน์ที่ 4 กับคอลัมน์ที่ 5 = <b>0.857</b>
+จาก 8 ชุด · ตัวที่กำหนดว่าชุดไหนจะทำคะแนนได้แค่ไหน คือความชัดของ label ไม่ใช่ตัวโมเดล
+</div>
+
+<h2>negative มาจากไหน และ AUC ที่วัดได้มาจากอะไร</h2>
+<p class="lede">negative ทุกตัวเป็น TCR จริงที่ถูกหยิบมาจากที่ใดที่หนึ่ง — ที่มาของมันเปลี่ยนความหมายของตัวเลข</p>
+
+<div class="note">
+negative ที่เป็น positive ของ peptide ซึ่งใช้ <b>HLA ต่างกัน</b> แยกออกได้ด้วย HLA restriction อย่างเดียว
+โดยไม่ต้องรู้อะไรเรื่อง peptide เลย · negative ที่จับ peptide อื่นบน <b>HLA เดียวกัน</b>
+แยกได้ด้วย specificity เท่านั้น ซึ่งเป็นสิ่งที่งานนี้อ้าง · ส่วน negative ที่<b>ไม่เป็น positive ของชุดใดเลย</b>
+คือเซลล์ที่ dextramer ไม่ติด และเป็นที่ซ่อนตัวของ false negative จาก dropout<br>
+ตารางนี้ให้คะแนน prediction ชุดเดิม (rank-mean ของทุกสมาชิกทุก init) แยกตามกลุ่ม negative ไม่มีการเทรนใหม่
+</div>
+
+<div class="scroll">
+<table>
+<thead><tr><th>ชุด</th><th>pos / neg</th><th>AUC เทียบ negative<br>ที่เป็น positive ของ HLA เดียวกัน</th>
+<th>…ของ HLA อื่น</th><th>…ที่ไม่รู้ที่มา<br>(dextramer ไม่ติด)</th><th>รวม</th></tr></thead>
+<tbody>
+<tr><td>ELAGIGILTV</td><td style="color:var(--muted)">370 / 969</td><td>0.961<span style="color:var(--muted);font-size:.7rem"> n=99</span></td><td>0.939<span style="color:var(--muted);font-size:.7rem"> n=125</span></td><td>0.911<span style="color:var(--muted);font-size:.7rem"> n=745</span></td><td style="font-weight:600">0.920</td></tr>
+<tr><td>RAKFKQLL</td><td style="color:var(--muted)">519 / 1,365</td><td style="color:var(--muted)">—</td><td>0.817<span style="color:var(--muted);font-size:.7rem"> n=329</span></td><td>0.772<span style="color:var(--muted);font-size:.7rem"> n=1036</span></td><td style="font-weight:600">0.783</td></tr>
+<tr><td>GILGFVFTL</td><td style="color:var(--muted)">589 / 1,692</td><td>0.858<span style="color:var(--muted);font-size:.7rem"> n=150</span></td><td>0.832<span style="color:var(--muted);font-size:.7rem"> n=258</span></td><td>0.773<span style="color:var(--muted);font-size:.7rem"> n=1284</span></td><td style="font-weight:600">0.789</td></tr>
+<tr><td>GLCTLVAML</td><td style="color:var(--muted)">96 / 413</td><td>0.840<span style="color:var(--muted);font-size:.7rem"> n=47</span></td><td>0.868<span style="color:var(--muted);font-size:.7rem"> n=52</span></td><td>0.831<span style="color:var(--muted);font-size:.7rem"> n=314</span></td><td style="font-weight:600">0.837</td></tr>
+<tr><td>IVTDFSVIK</td><td style="color:var(--muted)">89 / 246</td><td>0.657<span style="color:var(--muted);font-size:.7rem"> n=7</span></td><td>0.758<span style="color:var(--muted);font-size:.7rem"> n=60</span></td><td>0.756<span style="color:var(--muted);font-size:.7rem"> n=179</span></td><td style="font-weight:600">0.754</td></tr>
+<tr><td>NLVPMVATV</td><td style="color:var(--muted)">242 / 722</td><td>0.785<span style="color:var(--muted);font-size:.7rem"> n=90</span></td><td>0.694<span style="color:var(--muted);font-size:.7rem"> n=111</span></td><td>0.646<span style="color:var(--muted);font-size:.7rem"> n=521</span></td><td style="font-weight:600">0.671</td></tr>
+<tr><td>AVFDRKSDAK</td><td style="color:var(--muted)">220 / 655</td><td>0.699<span style="color:var(--muted);font-size:.7rem"> n=4</span></td><td style="color:var(--bad);font-weight:600">0.595<span style="color:var(--muted);font-size:.7rem"> n=195</span></td><td style="color:var(--bad);font-weight:600">0.539<span style="color:var(--muted);font-size:.7rem"> n=456</span></td><td style="font-weight:600">0.556</td></tr>
+<tr><td>KLGGALQAK</td><td style="color:var(--muted)">367 / 789</td><td style="color:var(--muted)">—</td><td>0.654<span style="color:var(--muted);font-size:.7rem"> n=222</span></td><td style="color:var(--bad);font-weight:600">0.569<span style="color:var(--muted);font-size:.7rem"> n=567</span></td><td style="font-weight:600">0.593</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note good-note">
+<b>ข่าวดี — โมเดลไม่ได้อ่าน HLA แทน specificity</b> · AUC เทียบ negative ที่ HLA เดียวกัน
+<b>สูงกว่าหรือเท่า</b> เทียบ HLA ต่างกัน ใน 4 จาก
+6 ชุดที่มี negative กลุ่มนั้นให้วัด
+(ELAGIGILTV 0.961 เทียบ 0.939 ·
+NLVPMVATV 0.785 เทียบ 0.694)
+ถ้าโมเดลอ่าน HLA อยู่ ตัวเลขต้องกลับทาง · <b>benchmark นี้วัดสิ่งที่มันอ้างว่าวัด</b>
+</div>
+
+<div class="note bad-note">
+<b>ข่าวร้าย — จุดที่พังคือ negative ที่ไม่รู้ที่มา</b> · ทุกชุดได้คะแนนต่ำที่สุดเมื่อเทียบกับกลุ่มนี้
+(8 จาก 8 ชุดต่ำกว่าเทียบ HLA อื่น) และกลุ่มนี้คือ
+70%–77%
+ของ negative ทั้งหมด · KLGGALQAK 0.569 ·
+AVFDRKSDAK 0.539<br>
+ถ้า negative กลุ่มนี้เป็น repertoire สุ่มจริง การแยก binder ออกจากมันควร<b>ง่ายกว่า</b>แยกจาก binder ของ peptide อื่น
+แต่กลับยากกว่าทุกชุด — รูปแบบนี้ตรงกับการมี binder จริงปนอยู่ในกองนั้น (dextramer dropout)
+<b>นี่คือข้อบกพร่องที่ระบุตำแหน่งได้แล้ว ไม่ใช่ข้อสังเกตลอย ๆ</b> และเป็นที่ที่ UMI count จะแก้ได้ ถ้ามี
+</div>
+
+<h2>ที่ยังไม่เสร็จ และเพราะอะไร</h2>
+
+<div class="note">
+<b>ที่ยังไม่ได้ทำ และทำไมถึงหยุด</b><br>
+<b>ESM-2 รุ่น 150M</b> — โหลดได้ 137 MB จาก ~600 MB ใน 15 นาทีแล้วหยุดโดยตั้งใจ: รุ่น 35M เสมอกับ
+n-gram อยู่แล้ว การขยาย encoder 3 เท่าขยับสมาชิกตัวเดียวได้ราว ±0.02 ซึ่งเปลี่ยนข้อสรุปไม่ได้<br>
+<b>EGNN encoder และ dual encoder</b> ของ Abeer et al. 2026 และ <b>Boltz-2 confidence เป็นสมาชิก</b> —
+สามอย่างนี้คือสิ่งเดียวในสองเปเปอร์ที่ยังน่าจะดันคะแนนได้อีก และทั้งสามเป็นงาน GPU หลายชั่วโมง
+ต้องส่งขึ้น HPC ไม่ใช่รันบนเครื่องนี้<br>
+<b>และบทเรียนของรอบนี้เรื่องเครื่อง</b> — ครั้งแรกรันขนาน 8 โปรเซสบน MacBook โดยไม่ตั้ง
+<code>OMP_NUM_THREADS=1</code> · numpy/BLAS เปิด thread pool เต็มจำนวนคอร์<b>ในทุกโปรเซส</b>
+→ load average ขึ้นถึง <b>101 บนเครื่อง 10 คอร์</b> ร้อนขึ้นแต่ไม่ได้เร็วขึ้น และงานถูกระบบฆ่าไป 4 ตัว ·
+รอบที่รันซ้ำจำกัดเป็นหนึ่งโปรเซสหนึ่ง thread (<code>nice -n 10</code>) load อยู่ที่ 2–3 และเสร็จครบ
+</div>
+
+<h2>ข้อสรุป</h2>
+<ul>
+<li><b>สามชุดนี้ไม่มีสัญญาณให้เรียน</b> — NLVPMVATV, AVFDRKSDAK, KLGGALQAK
+ได้ 0.520–0.606 ภายใต้สามวิธีที่ไม่แชร์ feature representation กันเลย
+(KLGGALQAK ต่างกันแค่ 0.011 ระหว่างวิธีที่ดีสุดกับแย่สุด)
+สามมุมมองที่ไม่เกี่ยวกันอ่านได้เท่าการเดา เป็นหลักฐานเรื่องข้อมูล ไม่ใช่เรื่องโมเดลตัวใดตัวหนึ่ง</li>
+<li><b>ความแกว่งจากการสุ่มค่าเริ่มต้นเพียงอย่างเดียว วัดได้แล้ว</b> — รันซ้ำ 3 รอบ โดยตรึง fold ไว้
+เปลี่ยนแค่ <code>torch.manual_seed</code>: Contacts (RandomForest) ได้ <b>±0.000 ทั้ง 8 ชุด</b>
+ส่วนสองวิธีที่เป็น neural network แกว่ง 0.003–0.055 AUC
+โดยชุดเล็กแกว่งมากกว่าชุดใหญ่ชัดเจน · <b>ความต่างระหว่างวิธีที่เล็กกว่าช่วงนี้ อ่านเป็นผลไม่ได้</b></li>
+<li><b>ไม่ต้องแก้สถาปัตยกรรมต่อ</b> — เคยลองเปลี่ยนหัวอ่านให้แยก TCR กับ pMHC แล้ว paired t ทั้งสามชุดได้ |t| &lt; 1
+และชุดที่คาดว่าจะช่วยที่สุดกลับแย่ลง</li>
+<li><b>และเพิ่มสมาชิก ensemble ไม่ช่วย</b> — จาก 3 สมาชิก (1 init) เป็น 9 สมาชิก (3 init)
+ค่าเฉลี่ย 8 ชุดขยับจาก 0.735 เป็น 0.739 เท่านั้น
+<b>เพดานนี้ไม่ได้มาจากจำนวนโมเดล</b> — เพิ่มสมาชิกสามเท่าได้มา +0.004 AUC</li>
+<li><b>คำถามถัดไปอยู่ที่ข้อมูล ไม่ใช่โมเดล</b> — KLGGALQAK fit ข้อมูลเทรนของตัวเองไม่ได้ (train AUC 0.527)
+ขณะที่ ELAGIGILTV ทำได้ 0.912 ด้วยโค้ดเดียวกัน ความต่างอยู่ที่วิธีสร้าง negative ของแต่ละ peptide</li>
+<li><b>ห้าตระกูลวิธีแล้ว และไม่มีตัวใดชนะ n-gram ของตัวอักษรเกินความแกว่ง</b> — เพิ่ม
+protein language model (ESM-2, ความรู้จากโปรตีนหลายล้านตัว), PU learning (วิธีมาตรฐานของ negative ปนเปื้อน),
+การเฉลี่ย representation แทนการเลือก, และระยะถึง binder ที่ตีพิมพ์แล้ว ·
+ESM-2 ชนะของเดิมใน 2
+จาก 8 ชุด เฉลี่ยต่างกัน -0.013
+· <b>ฝั่งโมเดลปิดด้วยการวัด ไม่ใช่ด้วยการอ้าง</b></li>
+<li><b>ความเชื่อถือได้ของ label วัดเป็นตัวเลขได้ และมันทำนายเพดาน</b> — เอา positive ของแต่ละ peptide
+ไปแยกจาก positive ของ peptide อื่น (ไม่แตะ negative เลย) ได้ 0.642–0.888
+· Spearman กับ AUC ที่ทำได้จริง = <b>0.857</b> · <b>ไม่มีชุดไหนที่ label เป็น noise ล้วน</b>
+ซึ่งค้านสมมติฐานที่ตั้งไว้ตอนแรกของรอบนี้ และทำให้ "สองชุดนี้ไม่มีสัญญาณ" เป็นคำพูดที่หยาบเกินไป —
+ที่ถูกคือ <b>สัญญาณมีน้อยและ negative ปนเปื้อน</b></li>
+<li><b>ตรวจจากนอกชุดข้อมูลแล้ว: label ที่มีวรรณกรรมรองรับถูกต้อง</b> — โมเดลที่เทรนจาก TCR ที่ตีพิมพ์แล้วอย่างเดียว
+ไม่เห็นแถวในชุดนี้แม้แถวเดียว ทำได้ 0.644 เฉลี่ย 7 ชุด
+· GLCTLVAML ได้ 0.792 เทียบกับโมเดลในชุดเองที่
+0.788 — <b>เท่ากันทั้งที่ไม่เคยเห็นข้อมูล</b></li>
+<li><b>และสองชุดที่ตายไม่มีข้อมูลจากที่อื่นให้เสริมเลย</b> — KLGGALQAK
+มี TCR ที่ตีพิมพ์แล้ว 0 คู่ในทั้ง VDJdb, McPAS-TCR และ IEDB
+· IVTDFSVIK 37, AVFDRKSDAK 36 คู่ ซึ่งน้อยเกินกว่าจะเทรนได้
+· <b>นี่ปิดทางฝั่งโมเดลและทางฝั่ง "หาข้อมูลมาเสริม" พร้อมกัน</b></li>
+<li><b>ข้อบกพร่องถูกระบุตำแหน่งแล้ว</b> — ทุกชุดได้ AUC ต่ำที่สุดเมื่อเทียบกับ negative ที่ dextramer ไม่ติด
+(KLGGALQAK 0.569 · AVFDRKSDAK 0.539)
+ซึ่งควรเป็นกลุ่มที่ <i>ง่าย</i> ที่สุดถ้ามันเป็น repertoire สุ่มจริง · ตรงกับการมี false negative จาก dropout ปนอยู่
+· และ<b>โมเดลไม่ได้อ่าน HLA แทน specificity</b> (AUC เทียบ negative HLA เดียวกัน ≥ HLA อื่น ใน
+4/6 ชุด) — benchmark วัดสิ่งที่มันอ้างว่าวัด</li>
+<li><b>ทางที่เหลือมีทางเดียวและไม่ใช่งานโมเดล</b> — ต้องมี UMI count ของ dextramer เพื่อทำ ITRAP/ICON
+(CSV ที่รีโปแจกไม่ได้เก็บไว้) หรือทำการทดลองใหม่ที่ไม่ใช่ 10x สำหรับ A*03/A*11
+· การตัด label ที่น่าสงสัยด้วยโมเดลเองไม่ช่วย
+(-0.001 AUC)
+เพราะต้องมีโมเดลที่ใช้การได้อยู่ก่อนจึงจะรู้ว่า label ไหนผิด</li>
+<li><b>และชุด pan_peptide ประกอบมาผิด</b> — 22,410 แถวแต่ index ไม่ซ้ำแค่ 19,282 · ไฟล์ PDB 22,410 ไฟล์
+แต่ 3,128 ไฟล์ไม่เคยถูกเรียกใช้ · label ของคู่ที่ซ้ำตรงกันหมดจึงไม่ใช่ label noise แต่เป็นการประกอบผิด
+· เป็นเหตุผลให้ตรวจที่มาของ negative ในชุดอื่นด้วย</li>
+</ul>
+
+<h2>ชุดที่รันไม่ได้</h2>
+<div class="scroll">
+<table>
+<thead><tr><th>ชุด</th><th>วิธี</th><th>สาเหตุ</th></tr></thead>
+<tbody>
+<tr><td>pan_peptide</td><td style="text-align:left">STAG</td><td style="text-align:left">ValueError: The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().</td></tr>
+</tbody>
+</table>
+</div>
+<p class="prov">เป็นบั๊กของ repo ต้นฉบับ ไม่ใช่ของการรันครั้งนี้ — <code>df.loc[graph.fold]['fold']</code>
+คืน Series เพราะ CSV มี index ซ้ำ ชุด peptide เดี่ยวมี index ไม่ซ้ำจึงไม่เจอปัญหานี้
+คำสั่งที่ README โฆษณาไว้ (<code>python evaluations.py STAG pan_peptide</code>) รันไม่ผ่าน</p>
+
+<hr>
+<h2>ที่มาของตัวเลข</h2>
+<dl class="prov">
+<dt>โค้ด</dt><dd>github.com/KavrakiLab/STAG_public @ 06c30a57 (MIT)</dd>
+<dt>ต่างจากต้นฉบับ</dt><dd>2 บรรทัดใน models/STAG/cross_validation.py — y=graph.label → y=int(graph.label)
+(PyG รุ่นใหม่ไม่ promote scalar) · baseline ทั้งสองตัวรันโดยไม่แก้โค้ดเลย</dd>
+<dt>วิธีแบ่ง fold</dt><dd>สุ่มใหม่ใน cross_validation ด้วย np.random.randint — upstream ไม่ seed; runner ของเรา seed 20261107 เท่ากันทุกโปรเซส ทั้งสามวิธีจึงได้ fold ชุดเดียวกัน</dd>
+<dt>ผลดิบ</dt><dd>runs/results/json/ · 1 ไฟล์ต่อ (วิธี, ชุด) · log บนคลัสเตอร์ SLURM ~/stag/logs/</dd>
+<dt>ensemble ที่วัดจริง</dt><dd>runs/results/preds_seed/init&#123;1,2,3&#125;/ — prediction ราย sample
+9 สมาชิก × 8 ชุด × 5 fold ดึงออกมาจาก hook <code>final_preds.to_csv</code> ของ upstream เอง
+· สรุปเป็น runs/results/fusion_seeds.json ด้วย local/fuse_seeds.py (ตรวจว่า fold ตรงกันก่อนรวมทุกครั้ง)</dd>
+<dt>การแยก seed</dt><dd>seed ของการแบ่ง fold (<code>np.random</code>) ตรึงที่ 20261107 ทุกสมาชิก
+ส่วน seed ของค่าเริ่มต้นโมเดล (<code>torch.manual_seed</code>) เป็น 1/2/3 — ถ้าไม่แยกสองอย่างนี้
+fold จะเลื่อนตามไปด้วย แล้วการเฉลี่ย prediction ข้าม init จะกลายเป็นการรั่วข้อมูลเทรนเข้า test</dd>
+<dt>ข้อมูล curate จากภายนอก</dt><dd>VDJdb release 2026-11-06 (CC-BY) · McPAS-TCR full CSV
+· IEDB receptor export tcr_full_v3 (4 พ.ย. 2026) · รวมและกรอง 10x ด้วย ext/ext_merge.py
+→ ext/curated_&#123;EPITOPE&#125;.csv · pool negative จาก VDJdb epitope อื่นที่ไม่ใช่ 8 ตัวนี้
+(ext/vdjdb_background.csv — คู่ α+β ที่ไม่ซ้ำกัน 115,894 คู่ จาก 1,394 epitope)</dd>
+<dt>ตัววัด label</dt><dd>seqmodel/label_probe.py (ลายนิ้วมือ + อัตราพลิก)
+· seqmodel/neg_provenance.py (ที่มาของ negative + AUC แยกกลุ่ม)
+· seqmodel/train_ext.py (ข้อมูลนอก) · seqmodel/train_clean.py (ตัด label)
+· ผลดิบ runs/results/&#123;label_probe,neg_provenance,ext_summary_*,clean_summary_*&#125;.json</dd>
+<dt>สคริปต์สร้างหน้านี้</dt><dd>local/build_report.py — ทุกตัวเลขคำนวณจาก JSON ไม่มีเลขที่พิมพ์มือ</dd>
+</dl>
+
+<footer>
+STAG — Slone, Conev, Rigo, Reuben &amp; Kavraki, IEEE/ACM TCBBIO 22(1):171–179, 2025 ·
+รันบน a university SLURM cluster · หน้านี้สร้างโดยสคริปต์ สร้างใหม่ได้ด้วย <code>python3 local/build_report.py</code>
+</footer>
+
+</div>
+</body>
+</html>
