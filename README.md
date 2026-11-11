@@ -7,7 +7,9 @@ datasets, plus four extra prediction streams fused on top of it.
 Four of eight clear 0.75. Every number below is 5-fold CV, mean of 3 seeds, with the fusion rule
 chosen on the folds that are *not* being scored.
 
-![workflow](docs/workflow.svg)
+![workflow](docs/workflow.png)
+
+<sub>Vector version: [docs/workflow.svg](docs/workflow.svg)</sub>
 
 ---
 
