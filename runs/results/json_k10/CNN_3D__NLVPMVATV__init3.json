@@ -1,0 +1,28 @@
+{
+  "method": "CNN_3D",
+  "dataset": "NLVPMVATV",
+  "k": 10,
+  "torch_seed": 3,
+  "split_seed": 20261107,
+  "complexes": 964,
+  "positive_rate": 0.25103734439834025,
+  "upstream_commit": "06c30a57",
+  "deviation": "STAG_FOLDS hook so every method shares one split",
+  "fold_auc": [
+    0.7526041666666666,
+    0.6906845084920227,
+    0.5356037151702786,
+    0.6431989063568011,
+    0.6594366197183098,
+    0.5684210526315789,
+    0.7825223435948361,
+    0.5974025974025974,
+    0.577392578125,
+    0.6425352112676057
+  ],
+  "mean_auc": 0.6449801699425698,
+  "sd_auc": 0.07990551066213715,
+  "folds_done": 10,
+  "status": "ok",
+  "seconds": 450.8
+}

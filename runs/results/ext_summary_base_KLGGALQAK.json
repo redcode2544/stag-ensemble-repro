@@ -1,0 +1,23 @@
+{
+ "KLGGALQAK": {
+  "SeqCdr3": {
+   "mean": 0.5517075898938528,
+   "spread": 0.0,
+   "per_init": [
+    0.5517075898938528,
+    0.5517075898938528
+   ]
+  },
+  "_aux": {
+   "curated_raw": 0,
+   "curated_kept": 0,
+   "curated_dropped": 0,
+   "background": 2000,
+   "studies_nontenx": null
+  },
+  "_weights": {
+   "0.0": 10
+  },
+  "_guard": "beta"
+ }
+}

@@ -1,0 +1,28 @@
+{
+  "method": "CNN_3D",
+  "dataset": "ELAGIGILTV",
+  "k": 10,
+  "torch_seed": 1,
+  "split_seed": 20261107,
+  "complexes": 1339,
+  "positive_rate": 0.27632561613144135,
+  "upstream_commit": "06c30a57",
+  "deviation": "STAG_FOLDS hook so every method shares one split",
+  "fold_auc": [
+    0.9061296534017972,
+    0.9261188728392138,
+    0.8786008230452674,
+    0.8585263157894737,
+    0.9264403292181069,
+    0.9434187016080999,
+    0.8802858844550328,
+    0.9048421052631579,
+    0.8854773644105782,
+    0.8894117647058823
+  ],
+  "mean_auc": 0.899925181473661,
+  "sd_auc": 0.026282837898806435,
+  "folds_done": 10,
+  "status": "ok",
+  "seconds": 723.9
+}

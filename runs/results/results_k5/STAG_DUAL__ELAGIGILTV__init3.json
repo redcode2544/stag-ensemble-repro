@@ -1,0 +1,24 @@
+{
+  "method": "STAG_DUAL",
+  "dataset": "ELAGIGILTV",
+  "k": 5,
+  "torch_seed": 3,
+  "split_seed": 20261107,
+  "val_frac": 0.0,
+  "complexes": 1339,
+  "positive_rate": 0.27632561613144135,
+  "gpu": "NVIDIA A100-SXM4-80GB",
+  "upstream_commit": "06c30a57",
+  "fold_auc": [
+    0.8953984819734346,
+    0.9084931506849316,
+    0.9145833333333333,
+    0.9173325644616525,
+    0.9235287659200703
+  ],
+  "mean_auc": 0.9118672592746846,
+  "sd_auc": 0.010675235253763113,
+  "folds_done": 5,
+  "status": "ok",
+  "seconds": 619.0
+}

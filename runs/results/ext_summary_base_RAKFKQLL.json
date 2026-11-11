@@ -1,0 +1,23 @@
+{
+ "RAKFKQLL": {
+  "SeqCdr3": {
+   "mean": 0.7637368805259637,
+   "spread": 0.0007766193391803844,
+   "per_init": [
+    0.7633485708563734,
+    0.7641251901955538
+   ]
+  },
+  "_aux": {
+   "curated_raw": 563,
+   "curated_kept": 561,
+   "curated_dropped": 2,
+   "background": 1475,
+   "studies_nontenx": null
+  },
+  "_weights": {
+   "0.0": 10
+  },
+  "_guard": "beta"
+ }
+}

@@ -1,0 +1,10 @@
+{
+  "complexes": 509,
+  "positive_rate": 0.18860510805500982,
+  "seed": 20261107,
+  "device": "mps",
+  "status": "failed",
+  "error": "RuntimeError: MPS backend out of memory (MPS allocated: 10.36 GiB, other allocations: 19.81 GiB, max allowed: 30.19 GiB). Tried to allocate 37.00 MiB on shared pool. Use PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0 to disable upper limit for memory allocations (may cause system failure).",
+  "seconds": 2598.7,
+  "mps_allocated_bytes_at_end": 0
+}

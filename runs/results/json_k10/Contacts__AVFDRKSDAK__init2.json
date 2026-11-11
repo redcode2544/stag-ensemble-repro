@@ -1,0 +1,28 @@
+{
+  "method": "Contacts",
+  "dataset": "AVFDRKSDAK",
+  "k": 10,
+  "torch_seed": 2,
+  "split_seed": 20261107,
+  "complexes": 875,
+  "positive_rate": 0.25142857142857145,
+  "upstream_commit": "06c30a57",
+  "deviation": "STAG_FOLDS hook so every method shares one split",
+  "fold_auc": [
+    0.5291044776119402,
+    0.45938047925189945,
+    0.6418181818181818,
+    0.5350210970464135,
+    0.47092038396386227,
+    0.594758064516129,
+    0.5162037037037037,
+    0.4820945945945946,
+    0.549062049062049,
+    0.5037634408602151
+  ],
+  "mean_auc": 0.528212647242899,
+  "sd_auc": 0.0564756406999933,
+  "folds_done": 10,
+  "status": "ok",
+  "seconds": 472.6
+}

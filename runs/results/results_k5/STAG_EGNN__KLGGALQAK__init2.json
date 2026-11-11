@@ -1,0 +1,24 @@
+{
+  "method": "STAG_EGNN",
+  "dataset": "KLGGALQAK",
+  "k": 5,
+  "torch_seed": 2,
+  "split_seed": 20261107,
+  "val_frac": 0.0,
+  "complexes": 1156,
+  "positive_rate": 0.31747404844290655,
+  "gpu": "NVIDIA A100-SXM4-80GB",
+  "upstream_commit": "06c30a57",
+  "fold_auc": [
+    0.5539383561643835,
+    0.4871257746355939,
+    0.5307196029776675,
+    0.46923909423909427,
+    0.5451461566221582
+  ],
+  "mean_auc": 0.5172337969277796,
+  "sd_auc": 0.037142213012282176,
+  "folds_done": 5,
+  "status": "ok",
+  "seconds": 138.9
+}

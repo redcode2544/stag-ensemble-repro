@@ -1,0 +1,1080 @@
+{
+ "rule": {
+  "exact_pair_rate": 0.2,
+  "min_pairs": 5
+ },
+ "audit": {
+  "AVFDRKSDAK": [
+   {
+    "ref": "PMID:9207000",
+    "pairs": 9,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 0.1111111111111111,
+    "dropped": false
+   },
+   {
+    "ref": "doi:10.64898/2025.12.19.695506",
+    "pairs": 26,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1004173",
+    "pairs": 1,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   }
+  ],
+  "ELAGIGILTV": [
+   {
+    "ref": "doi:10.1186/s13059-026-04266-w",
+    "pairs": 4,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 0.25,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:17056587",
+    "pairs": 2,
+    "exact_in_dataset": 2,
+    "exact_in_positives": 2,
+    "rate": 1.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:23698002",
+    "pairs": 1,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 1.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:30617019",
+    "pairs": 1,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 1.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:27238970",
+    "pairs": 1,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://github.com/antigenomics/vdjdb-db/issues/215",
+    "pairs": 1,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 1.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:12555663",
+    "pairs": 52,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 0.019230769230769232,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:29429978",
+    "pairs": 1,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:30418433",
+    "pairs": 67,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:34811538",
+    "pairs": 8,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:41610844",
+    "pairs": 9,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:19786555",
+    "pairs": 13,
+    "exact_in_dataset": 11,
+    "exact_in_positives": 11,
+    "rate": 0.8461538461538461,
+    "dropped": true
+   },
+   {
+    "ref": "PMID:37231180",
+    "pairs": 7,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:34782741",
+    "pairs": 8,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://patents.google.com/patent/US2017044233A1",
+    "pairs": 5,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:41702949",
+    "pairs": 13,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "doi:10.64898/2025.12.19.695506",
+    "pairs": 13,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1023516",
+    "pairs": 7,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1032856",
+    "pairs": 4,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 0.25,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1031804",
+    "pairs": 1,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   }
+  ],
+  "GILGFVFTL": [
+   {
+    "ref": "PMID:18275829",
+    "pairs": 1,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:28423320",
+    "pairs": 19,
+    "exact_in_dataset": 8,
+    "exact_in_positives": 8,
+    "rate": 0.42105263157894735,
+    "dropped": true
+   },
+   {
+    "ref": "https://github.com/antigenomics/vdjdb-db/issues/215",
+    "pairs": 1,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:28250417",
+    "pairs": 8,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 0.125,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:27645996",
+    "pairs": 11,
+    "exact_in_dataset": 2,
+    "exact_in_positives": 2,
+    "rate": 0.18181818181818182,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:37749325",
+    "pairs": 1341,
+    "exact_in_dataset": 7,
+    "exact_in_positives": 7,
+    "rate": 0.005219985085756898,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:29997621",
+    "pairs": 102,
+    "exact_in_dataset": 33,
+    "exact_in_positives": 33,
+    "rate": 0.3235294117647059,
+    "dropped": true
+   },
+   {
+    "ref": "PMID:40250246",
+    "pairs": 70,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:40694338",
+    "pairs": 197,
+    "exact_in_dataset": 3,
+    "exact_in_positives": 3,
+    "rate": 0.015228426395939087,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:28300170",
+    "pairs": 66,
+    "exact_in_dataset": 18,
+    "exact_in_positives": 18,
+    "rate": 0.2727272727272727,
+    "dropped": true
+   },
+   {
+    "ref": "PMID:28636589",
+    "pairs": 111,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 0.009009009009009009,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:42691161",
+    "pairs": 4342,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:34811538",
+    "pairs": 146,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:34793243",
+    "pairs": 92,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:29483513",
+    "pairs": 65,
+    "exact_in_dataset": 13,
+    "exact_in_positives": 13,
+    "rate": 0.2,
+    "dropped": true
+   },
+   {
+    "ref": "PMID:27853786",
+    "pairs": 2,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 0.5,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:28636592",
+    "pairs": 193,
+    "exact_in_dataset": 42,
+    "exact_in_positives": 42,
+    "rate": 0.21761658031088082,
+    "dropped": true
+   },
+   {
+    "ref": "PMID:36923729",
+    "pairs": 116,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:30418433",
+    "pairs": 6,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:37133356",
+    "pairs": 2,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:7807026",
+    "pairs": 2,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:37231180",
+    "pairs": 2,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:37837618",
+    "pairs": 2,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:31781096",
+    "pairs": 2,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "doi:10.1186/s13059-026-04266-w",
+    "pairs": 3,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "doi:10.64898/2025.12.19.695506",
+    "pairs": 8,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1031507",
+    "pairs": 1,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1031337",
+    "pairs": 14,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1031861",
+    "pairs": 2,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1031366",
+    "pairs": 2,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1030787",
+    "pairs": 4,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 0.25,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1035066",
+    "pairs": 5,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1037230",
+    "pairs": 17,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1040280",
+    "pairs": 22,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1047168",
+    "pairs": 26,
+    "exact_in_dataset": 4,
+    "exact_in_positives": 4,
+    "rate": 0.15384615384615385,
+    "dropped": false
+   }
+  ],
+  "GLCTLVAML": [
+   {
+    "ref": "doi:10.1186/s13059-026-04266-w",
+    "pairs": 2,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 0.5,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:11046006",
+    "pairs": 41,
+    "exact_in_dataset": 3,
+    "exact_in_positives": 3,
+    "rate": 0.07317073170731707,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:37231180",
+    "pairs": 3,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:27645996",
+    "pairs": 14,
+    "exact_in_dataset": 4,
+    "exact_in_positives": 4,
+    "rate": 0.2857142857142857,
+    "dropped": true
+   },
+   {
+    "ref": "doi:10.64898/2025.12.19.695506",
+    "pairs": 25,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:28636589",
+    "pairs": 7,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:37133356",
+    "pairs": 4,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:28636592",
+    "pairs": 83,
+    "exact_in_dataset": 17,
+    "exact_in_positives": 17,
+    "rate": 0.20481927710843373,
+    "dropped": true
+   },
+   {
+    "ref": "PMID:40640147",
+    "pairs": 25,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:34793243",
+    "pairs": 66,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:31765434",
+    "pairs": 71,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:34811538",
+    "pairs": 181,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 0.0055248618784530384,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:36923729",
+    "pairs": 57,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:35525797",
+    "pairs": 1,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:38536748",
+    "pairs": 9,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:10925283",
+    "pairs": 16,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 0.0625,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:32393905",
+    "pairs": 2,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:38053994",
+    "pairs": 18,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:27507557",
+    "pairs": 35,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1004328",
+    "pairs": 3,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1033920",
+    "pairs": 1,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1036044",
+    "pairs": 2,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1040280",
+    "pairs": 7,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   }
+  ],
+  "IVTDFSVIK": [
+   {
+    "ref": "PMID:9207000",
+    "pairs": 14,
+    "exact_in_dataset": 3,
+    "exact_in_positives": 3,
+    "rate": 0.21428571428571427,
+    "dropped": true
+   },
+   {
+    "ref": "PMID:37837618",
+    "pairs": 3,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "doi:10.64898/2025.12.19.695506",
+    "pairs": 32,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1004173",
+    "pairs": 2,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   }
+  ],
+  "NLVPMVATV": [
+   {
+    "ref": "PMID:34210785",
+    "pairs": 1,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 1.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:28423320",
+    "pairs": 5,
+    "exact_in_dataset": 4,
+    "exact_in_positives": 4,
+    "rate": 0.8,
+    "dropped": true
+   },
+   {
+    "ref": "PMID:41098775",
+    "pairs": 1,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:16237109",
+    "pairs": 64,
+    "exact_in_dataset": 15,
+    "exact_in_positives": 15,
+    "rate": 0.234375,
+    "dropped": true
+   },
+   {
+    "ref": "PMID:41610844",
+    "pairs": 34,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 0.029411764705882353,
+    "dropped": false
+   },
+   {
+    "ref": "https://doi.org/10.1101/2020.05.04.20085779",
+    "pairs": 181,
+    "exact_in_dataset": 159,
+    "exact_in_positives": 159,
+    "rate": 0.8784530386740331,
+    "dropped": true
+   },
+   {
+    "ref": "PMID:37974400",
+    "pairs": 6,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "doi:10.64898/2025.12.19.695506",
+    "pairs": 26,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 0.038461538461538464,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:36516854",
+    "pairs": 2,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:30418433",
+    "pairs": 8,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:17709536",
+    "pairs": 1,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 1.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:39151427",
+    "pairs": 19,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 0.05263157894736842,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:38956325",
+    "pairs": 1,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:28623251",
+    "pairs": 9,
+    "exact_in_dataset": 6,
+    "exact_in_positives": 6,
+    "rate": 0.6666666666666666,
+    "dropped": true
+   },
+   {
+    "ref": "PMID:28636589",
+    "pairs": 53,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 0.018867924528301886,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:28636592",
+    "pairs": 63,
+    "exact_in_dataset": 23,
+    "exact_in_positives": 23,
+    "rate": 0.36507936507936506,
+    "dropped": true
+   },
+   {
+    "ref": "PMID:32140156",
+    "pairs": 2,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 1,
+    "rate": 0.5,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:28934479",
+    "pairs": 5,
+    "exact_in_dataset": 2,
+    "exact_in_positives": 2,
+    "rate": 0.4,
+    "dropped": true
+   },
+   {
+    "ref": "PMID:34793243",
+    "pairs": 16,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:38536748",
+    "pairs": 20,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:35589842",
+    "pairs": 2,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:38370810",
+    "pairs": 2,
+    "exact_in_dataset": 2,
+    "exact_in_positives": 2,
+    "rate": 1.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:37133356",
+    "pairs": 2,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:39746936",
+    "pairs": 9761,
+    "exact_in_dataset": 1,
+    "exact_in_positives": 0,
+    "rate": 0.00010244851961889151,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:9971792",
+    "pairs": 1,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:37193826",
+    "pairs": 1,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:32393905",
+    "pairs": 4,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://github.com/antigenomics/vdjdb-db/issues/252",
+    "pairs": 15,
+    "exact_in_dataset": 7,
+    "exact_in_positives": 7,
+    "rate": 0.4666666666666667,
+    "dropped": true
+   },
+   {
+    "ref": "PMID:26800118",
+    "pairs": 6,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:31502632",
+    "pairs": 7,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:34467251",
+    "pairs": 8,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:37837618",
+    "pairs": 5,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:38053994",
+    "pairs": 6,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:24778446",
+    "pairs": 8,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:36979775",
+    "pairs": 2,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1030361",
+    "pairs": 8,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1031799",
+    "pairs": 6,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1031861",
+    "pairs": 1,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1033919",
+    "pairs": 4,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "https://www.iedb.org/reference/1040280",
+    "pairs": 1,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   }
+  ],
+  "RAKFKQLL": [
+   {
+    "ref": "PMID:34811538",
+    "pairs": 487,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:31915375",
+    "pairs": 1,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:38452777",
+    "pairs": 8,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:10051632",
+    "pairs": 6,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "PMID:41686909",
+    "pairs": 2,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   },
+   {
+    "ref": "doi:10.64898/2025.12.19.695506",
+    "pairs": 53,
+    "exact_in_dataset": 0,
+    "exact_in_positives": 0,
+    "rate": 0.0,
+    "dropped": false
+   }
+  ]
+ },
+ "kept": {
+  "AVFDRKSDAK": 36,
+  "ELAGIGILTV": 205,
+  "GILGFVFTL": 6558,
+  "GLCTLVAML": 576,
+  "IVTDFSVIK": 37,
+  "KLGGALQAK": 0,
+  "NLVPMVATV": 10025,
+  "RAKFKQLL": 557
+ }
+}

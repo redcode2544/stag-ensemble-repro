@@ -1,0 +1,32 @@
+{
+ "GILGFVFTL": {
+  "SeqExt": {
+   "mean": 0.7571805736874712,
+   "spread": 0.004387661881053662,
+   "per_init": [
+    0.7549867427469443,
+    0.759374404627998
+   ]
+  },
+  "SeqExtOnly": {
+   "mean": 0.7591494307675506,
+   "spread": 0.006656417354440669,
+   "per_init": [
+    0.7558212220903302,
+    0.7624776394447709
+   ]
+  },
+  "_aux": {
+   "curated_raw": 7003,
+   "curated_kept": 2989,
+   "curated_dropped": 4014,
+   "background": 5978,
+   "studies_nontenx": null
+  },
+  "_weights": {
+   "0.3": 3,
+   "1.0": 7
+  },
+  "_guard": "beta"
+ }
+}

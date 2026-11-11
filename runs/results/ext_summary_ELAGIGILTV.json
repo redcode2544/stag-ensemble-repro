@@ -1,0 +1,32 @@
+{
+ "ELAGIGILTV": {
+  "SeqExt": {
+   "mean": 0.8317878281931542,
+   "spread": 0.002314787012067887,
+   "per_init": [
+    0.8329452216991882,
+    0.8306304346871203
+   ]
+  },
+  "SeqExtOnly": {
+   "mean": 0.7132380878589812,
+   "spread": 0.005707692043492862,
+   "per_init": [
+    0.7160919338807277,
+    0.7103842418372348
+   ]
+  },
+  "_aux": {
+   "curated_raw": 205,
+   "curated_kept": 191,
+   "curated_dropped": 14,
+   "background": 382,
+   "studies_nontenx": null
+  },
+  "_weights": {
+   "0.0": 1,
+   "0.3": 9
+  },
+  "_guard": "beta"
+ }
+}

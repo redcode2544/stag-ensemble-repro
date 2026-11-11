@@ -1,0 +1,28 @@
+{
+  "method": "Contacts",
+  "dataset": "ELAGIGILTV",
+  "k": 10,
+  "torch_seed": 3,
+  "split_seed": 20261107,
+  "complexes": 1339,
+  "positive_rate": 0.27632561613144135,
+  "upstream_commit": "06c30a57",
+  "deviation": "STAG_FOLDS hook so every method shares one split",
+  "fold_auc": [
+    0.8539356984478935,
+    0.9152261425526876,
+    0.8669415292353825,
+    0.8572421462329719,
+    0.9266528925619835,
+    0.8703923900118906,
+    0.8496391339214113,
+    0.8394345238095238,
+    0.7824131513647643,
+    0.7972560975609756
+  ],
+  "mean_auc": 0.8559133705699485,
+  "sd_auc": 0.04473738226510582,
+  "folds_done": 10,
+  "status": "ok",
+  "seconds": 728.3
+}

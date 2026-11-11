@@ -1,0 +1,23 @@
+{
+ "GILGFVFTL": {
+  "SeqCdr3": {
+   "mean": 0.7478766944338382,
+   "spread": 0.0,
+   "per_init": [
+    0.7478766944338382,
+    0.7478766944338382
+   ]
+  },
+  "_aux": {
+   "curated_raw": 6835,
+   "curated_kept": 2884,
+   "curated_dropped": 3951,
+   "background": 3116,
+   "studies_nontenx": null
+  },
+  "_weights": {
+   "0.0": 10
+  },
+  "_guard": "beta"
+ }
+}

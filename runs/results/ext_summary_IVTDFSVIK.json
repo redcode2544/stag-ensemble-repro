@@ -1,0 +1,33 @@
+{
+ "IVTDFSVIK": {
+  "SeqExt": {
+   "mean": 0.6997608196569822,
+   "spread": 0.0019083295379406229,
+   "per_init": [
+    0.698806654888012,
+    0.7007149844259526
+   ]
+  },
+  "SeqExtOnly": {
+   "mean": 0.4679073879243318,
+   "spread": 0.07315584101343842,
+   "per_init": [
+    0.504485308431051,
+    0.4313294674176126
+   ]
+  },
+  "_aux": {
+   "curated_raw": 37,
+   "curated_kept": 36,
+   "curated_dropped": 1,
+   "background": 200,
+   "studies_nontenx": null
+  },
+  "_weights": {
+   "0.0": 7,
+   "0.3": 2,
+   "1.0": 1
+  },
+  "_guard": "beta"
+ }
+}

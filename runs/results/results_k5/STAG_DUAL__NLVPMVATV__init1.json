@@ -1,0 +1,24 @@
+{
+  "method": "STAG_DUAL",
+  "dataset": "NLVPMVATV",
+  "k": 5,
+  "torch_seed": 1,
+  "split_seed": 20261107,
+  "val_frac": 0.0,
+  "complexes": 964,
+  "positive_rate": 0.25103734439834025,
+  "gpu": "NVIDIA A100-SXM4-80GB",
+  "upstream_commit": "06c30a57",
+  "fold_auc": [
+    0.5517814009661837,
+    0.502979414951246,
+    0.6188076036866359,
+    0.5863689776733256,
+    0.4702976732094112
+  ],
+  "mean_auc": 0.5460470140973606,
+  "sd_auc": 0.06030262862830052,
+  "folds_done": 5,
+  "status": "ok",
+  "seconds": 135.8
+}

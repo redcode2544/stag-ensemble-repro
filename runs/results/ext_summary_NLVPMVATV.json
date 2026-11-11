@@ -1,0 +1,31 @@
+{
+ "NLVPMVATV": {
+  "SeqExt": {
+   "mean": 0.6408085977440807,
+   "spread": 0.00412366837195588,
+   "per_init": [
+    0.6387467635581028,
+    0.6428704319300587
+   ]
+  },
+  "SeqExtOnly": {
+   "mean": 0.5684309359825093,
+   "spread": 0.022980510935514897,
+   "per_init": [
+    0.5799211914502667,
+    0.5569406805147518
+   ]
+  },
+  "_aux": {
+   "curated_raw": 10367,
+   "curated_kept": 6000,
+   "curated_dropped": 4367,
+   "background": 12000,
+   "studies_nontenx": null
+  },
+  "_weights": {
+   "0.0": 10
+  },
+  "_guard": "beta"
+ }
+}

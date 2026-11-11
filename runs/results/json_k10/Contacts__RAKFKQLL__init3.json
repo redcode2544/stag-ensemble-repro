@@ -1,0 +1,28 @@
+{
+  "method": "Contacts",
+  "dataset": "RAKFKQLL",
+  "k": 10,
+  "torch_seed": 3,
+  "split_seed": 20261107,
+  "complexes": 1884,
+  "positive_rate": 0.2754777070063694,
+  "upstream_commit": "06c30a57",
+  "deviation": "STAG_FOLDS hook so every method shares one split",
+  "fold_auc": [
+    0.6588284990143622,
+    0.7290521978021978,
+    0.694034679089027,
+    0.7251854468385729,
+    0.8247689880549921,
+    0.7353623188405798,
+    0.7377884615384616,
+    0.7290344827586208,
+    0.6737956204379563,
+    0.7169707020453289
+  ],
+  "mean_auc": 0.7224821396420099,
+  "sd_auc": 0.04499133950297364,
+  "folds_done": 10,
+  "status": "ok",
+  "seconds": 1034.7
+}

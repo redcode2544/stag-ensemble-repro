@@ -1,0 +1,82 @@
+{
+ "ELAGIGILTV": {
+  "n_pos": 370,
+  "n_neg": 969,
+  "betas": 194,
+  "pos_hit": 14,
+  "neg_hit": 4,
+  "pos_frac": 0.03783783783783784,
+  "neg_frac": 0.0041279669762641896,
+  "enrich": 9.166216216216217
+ },
+ "GLCTLVAML": {
+  "n_pos": 96,
+  "n_neg": 413,
+  "betas": 378,
+  "pos_hit": 12,
+  "neg_hit": 0,
+  "pos_frac": 0.125,
+  "neg_frac": 0.0,
+  "enrich": null
+ },
+ "RAKFKQLL": {
+  "n_pos": 519,
+  "n_neg": 1365,
+  "betas": 425,
+  "pos_hit": 2,
+  "neg_hit": 0,
+  "pos_frac": 0.0038535645472061657,
+  "neg_frac": 0.0,
+  "enrich": null
+ },
+ "GILGFVFTL": {
+  "n_pos": 589,
+  "n_neg": 1692,
+  "betas": 1810,
+  "pos_hit": 66,
+  "neg_hit": 4,
+  "pos_frac": 0.11205432937181664,
+  "neg_frac": 0.002364066193853428,
+  "enrich": 47.39898132427844
+ },
+ "IVTDFSVIK": {
+  "n_pos": 89,
+  "n_neg": 246,
+  "betas": 37,
+  "pos_hit": 0,
+  "neg_hit": 1,
+  "pos_frac": 0.0,
+  "neg_frac": 0.0040650406504065045,
+  "enrich": 0.0
+ },
+ "NLVPMVATV": {
+  "n_pos": 242,
+  "n_neg": 722,
+  "betas": 8206,
+  "pos_hit": 17,
+  "neg_hit": 4,
+  "pos_frac": 0.07024793388429752,
+  "neg_frac": 0.00554016620498615,
+  "enrich": 12.679752066115702
+ },
+ "KLGGALQAK": {
+  "n_pos": 367,
+  "n_neg": 789,
+  "betas": 0,
+  "pos_hit": 0,
+  "neg_hit": 0,
+  "pos_frac": 0.0,
+  "neg_frac": 0.0,
+  "enrich": null
+ },
+ "AVFDRKSDAK": {
+  "n_pos": 220,
+  "n_neg": 655,
+  "betas": 35,
+  "pos_hit": 1,
+  "neg_hit": 0,
+  "pos_frac": 0.004545454545454545,
+  "neg_frac": 0.0,
+  "enrich": null
+ }
+}

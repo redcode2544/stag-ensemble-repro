@@ -1,0 +1,17 @@
+This repository builds on STAG_public.
+
+  STAG_public — https://github.com/KavrakiLab/STAG_public
+  MIT License, Copyright (c) 2024 Kavraki Lab
+
+Files under hpc/STAG_model/ are taken from that repository; hpc/STAG2/ extends it.
+The STAG datasets themselves are NOT redistributed here — clone upstream for those.
+
+Stream 4 queries three public TCR databases. Their raw downloads are not
+redistributed here; ext/vdjdb_pull.py fetches them at run time. Cite them directly:
+
+  VDJdb      — Goncharov et al., Nucleic Acids Research
+  McPAS-TCR  — Tickotsky et al., Bioinformatics
+  IEDB       — Vita et al., Nucleic Acids Research
+
+Stream 5 uses ESM-2 (esm2_t12_35M_UR50D) via fair-esm, MIT License,
+Copyright (c) Meta Platforms, Inc.

@@ -1,0 +1,24 @@
+{
+ "KLGGALQAK": {
+  "SeqExt": {
+   "mean": 0.5563866774478323,
+   "spread": 0.0025431702686660174,
+   "per_init": [
+    0.5576582625821653,
+    0.5551150923134993
+   ]
+  },
+  "_aux": {
+   "curated_raw": 0,
+   "curated_kept": 0,
+   "curated_dropped": 0,
+   "background": 2000,
+   "studies_nontenx": null
+  },
+  "_weights": {
+   "0.0": 4,
+   "0.3": 6
+  },
+  "_guard": "beta"
+ }
+}

@@ -1,0 +1,28 @@
+{
+  "method": "Contacts",
+  "dataset": "NLVPMVATV",
+  "k": 10,
+  "torch_seed": 3,
+  "split_seed": 20261107,
+  "complexes": 964,
+  "positive_rate": 0.25103734439834025,
+  "upstream_commit": "06c30a57",
+  "deviation": "STAG_FOLDS hook so every method shares one split",
+  "fold_auc": [
+    0.6183574879227053,
+    0.5424787606196901,
+    0.5567226890756303,
+    0.5847953216374268,
+    0.552439024390244,
+    0.5882352941176471,
+    0.6370967741935484,
+    0.6472431077694236,
+    0.570556640625,
+    0.49205128205128207
+  ],
+  "mean_auc": 0.5789976382402597,
+  "sd_auc": 0.04698366139598234,
+  "folds_done": 10,
+  "status": "ok",
+  "seconds": 530.5
+}

@@ -1,0 +1,28 @@
+{
+  "method": "CNN_3D",
+  "dataset": "RAKFKQLL",
+  "k": 10,
+  "torch_seed": 1,
+  "split_seed": 20261107,
+  "complexes": 1884,
+  "positive_rate": 0.2754777070063694,
+  "upstream_commit": "06c30a57",
+  "deviation": "STAG_FOLDS hook so every method shares one split",
+  "fold_auc": [
+    0.7435602953240361,
+    0.7951211734693877,
+    0.6695772058823529,
+    0.8183235867446395,
+    0.8648473034437947,
+    0.7919191919191919,
+    0.8398926654740608,
+    0.7221830985915493,
+    0.6500847457627118,
+    0.7551981806367771
+  ],
+  "mean_auc": 0.7650707447248501,
+  "sd_auc": 0.07051692241818934,
+  "folds_done": 10,
+  "status": "ok",
+  "seconds": 971.7
+}

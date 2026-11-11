@@ -1,0 +1,114 @@
+{
+ "ELAGIGILTV": {
+  "unique": 218,
+  "new_from": {
+   "vdjdb": 172,
+   "mcpas": 34,
+   "iedb": 12
+  },
+  "rows_seen": {
+   "vdjdb": 172,
+   "mcpas": 126,
+   "iedb": 112
+  },
+  "studies": 20
+ },
+ "NLVPMVATV": {
+  "unique": 10367,
+  "new_from": {
+   "vdjdb": 10313,
+   "mcpas": 34,
+   "iedb": 20
+  },
+  "rows_seen": {
+   "vdjdb": 10313,
+   "mcpas": 405,
+   "iedb": 228
+  },
+  "studies": 40
+ },
+ "GILGFVFTL": {
+  "unique": 7003,
+  "new_from": {
+   "vdjdb": 6834,
+   "mcpas": 76,
+   "iedb": 93
+  },
+  "rows_seen": {
+   "vdjdb": 6834,
+   "mcpas": 750,
+   "iedb": 1224
+  },
+  "studies": 35
+ },
+ "GLCTLVAML": {
+  "unique": 673,
+  "new_from": {
+   "vdjdb": 643,
+   "mcpas": 17,
+   "iedb": 13
+  },
+  "rows_seen": {
+   "vdjdb": 643,
+   "mcpas": 134,
+   "iedb": 247
+  },
+  "studies": 23
+ },
+ "RAKFKQLL": {
+  "unique": 557,
+  "new_from": {
+   "vdjdb": 557,
+   "mcpas": 0,
+   "iedb": 0
+  },
+  "rows_seen": {
+   "vdjdb": 557,
+   "mcpas": 1,
+   "iedb": 1
+  },
+  "studies": 6
+ },
+ "KLGGALQAK": {
+  "unique": 0,
+  "new_from": {
+   "vdjdb": 0,
+   "mcpas": 0,
+   "iedb": 0
+  },
+  "rows_seen": {
+   "vdjdb": 0,
+   "mcpas": 0,
+   "iedb": 0
+  },
+  "studies": 0
+ },
+ "AVFDRKSDAK": {
+  "unique": 36,
+  "new_from": {
+   "vdjdb": 33,
+   "mcpas": 2,
+   "iedb": 1
+  },
+  "rows_seen": {
+   "vdjdb": 33,
+   "mcpas": 2,
+   "iedb": 2
+  },
+  "studies": 3
+ },
+ "IVTDFSVIK": {
+  "unique": 51,
+  "new_from": {
+   "vdjdb": 43,
+   "mcpas": 6,
+   "iedb": 2
+  },
+  "rows_seen": {
+   "vdjdb": 43,
+   "mcpas": 8,
+   "iedb": 8
+  },
+  "studies": 4
+ }
+}

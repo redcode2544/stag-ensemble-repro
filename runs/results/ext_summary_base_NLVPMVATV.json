@@ -1,0 +1,23 @@
+{
+ "NLVPMVATV": {
+  "SeqCdr3": {
+   "mean": 0.6408085977440807,
+   "spread": 0.00412366837195588,
+   "per_init": [
+    0.6387467635581028,
+    0.6428704319300587
+   ]
+  },
+  "_aux": {
+   "curated_raw": 10314,
+   "curated_kept": 10034,
+   "curated_dropped": 280,
+   "background": 0,
+   "studies_nontenx": null
+  },
+  "_weights": {
+   "0.0": 10
+  },
+  "_guard": "beta"
+ }
+}

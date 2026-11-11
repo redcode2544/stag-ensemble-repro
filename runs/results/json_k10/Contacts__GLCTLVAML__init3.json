@@ -1,0 +1,28 @@
+{
+  "method": "Contacts",
+  "dataset": "GLCTLVAML",
+  "k": 10,
+  "torch_seed": 3,
+  "split_seed": 20261107,
+  "complexes": 509,
+  "positive_rate": 0.18860510805500982,
+  "upstream_commit": "06c30a57",
+  "deviation": "STAG_FOLDS hook so every method shares one split",
+  "fold_auc": [
+    0.7633136094674556,
+    0.7151300236406619,
+    0.6848404255319149,
+    0.7777777777777777,
+    0.8425925925925926,
+    0.7432432432432432,
+    0.5351851851851852,
+    0.6168091168091168,
+    0.8045454545454546,
+    0.6471153846153845
+  ],
+  "mean_auc": 0.7130552813408787,
+  "sd_auc": 0.09358663772845814,
+  "folds_done": 10,
+  "status": "ok",
+  "seconds": 277.7
+}

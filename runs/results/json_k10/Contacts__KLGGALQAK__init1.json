@@ -1,0 +1,28 @@
+{
+  "method": "Contacts",
+  "dataset": "KLGGALQAK",
+  "k": 10,
+  "torch_seed": 1,
+  "split_seed": 20261107,
+  "complexes": 1156,
+  "positive_rate": 0.31747404844290655,
+  "upstream_commit": "06c30a57",
+  "deviation": "STAG_FOLDS hook so every method shares one split",
+  "fold_auc": [
+    0.5807004187285877,
+    0.45106922798115257,
+    0.51762882603642,
+    0.5926908340701444,
+    0.5012028869286287,
+    0.5990484429065744,
+    0.5325123152709359,
+    0.5268204974528019,
+    0.608710923779417,
+    0.5103785103785103
+  ],
+  "mean_auc": 0.5420762883533172,
+  "sd_auc": 0.05122847838543163,
+  "folds_done": 10,
+  "status": "ok",
+  "seconds": 638.6
+}

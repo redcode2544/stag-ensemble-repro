@@ -1,0 +1,24 @@
+{
+  "method": "STAG_EGNN",
+  "dataset": "RAKFKQLL",
+  "k": 5,
+  "torch_seed": 3,
+  "split_seed": 20261107,
+  "val_frac": 0.0,
+  "complexes": 1884,
+  "positive_rate": 0.2754777070063694,
+  "gpu": "NVIDIA A100-SXM4-80GB",
+  "upstream_commit": "06c30a57",
+  "fold_auc": [
+    0.7834291187739463,
+    0.7489120353856032,
+    0.7750746268656716,
+    0.7893656032269893,
+    0.751807728781413
+  ],
+  "mean_auc": 0.7697178226067247,
+  "sd_auc": 0.018414549413969063,
+  "folds_done": 5,
+  "status": "ok",
+  "seconds": 671.9
+}

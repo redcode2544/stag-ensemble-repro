@@ -1,0 +1,32 @@
+{
+ "RAKFKQLL": {
+  "SeqExt": {
+   "mean": 0.7662406494915155,
+   "spread": 0.005587973271486191,
+   "per_init": [
+    0.7690346361272585,
+    0.7634466628557723
+   ]
+  },
+  "SeqExtOnly": {
+   "mean": 0.6821864558931114,
+   "spread": 0.022460918230716387,
+   "per_init": [
+    0.6934169150084697,
+    0.6709559967777533
+   ]
+  },
+  "_aux": {
+   "curated_raw": 557,
+   "curated_kept": 555,
+   "curated_dropped": 2,
+   "background": 1110,
+   "studies_nontenx": null
+  },
+  "_weights": {
+   "0.0": 3,
+   "0.3": 7
+  },
+  "_guard": "beta"
+ }
+}

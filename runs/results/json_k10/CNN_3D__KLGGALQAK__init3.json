@@ -1,0 +1,28 @@
+{
+  "method": "CNN_3D",
+  "dataset": "KLGGALQAK",
+  "k": 10,
+  "torch_seed": 3,
+  "split_seed": 20261107,
+  "complexes": 1156,
+  "positive_rate": 0.31747404844290655,
+  "upstream_commit": "06c30a57",
+  "deviation": "STAG_FOLDS hook so every method shares one split",
+  "fold_auc": [
+    0.5742098030233623,
+    0.5782892352301559,
+    0.49716932578486883,
+    0.643241532130421,
+    0.5675022651766838,
+    0.46916508538899426,
+    0.5018013381369018,
+    0.6487190620929223,
+    0.6761133603238866,
+    0.5622032288698955
+  ],
+  "mean_auc": 0.5718414236158093,
+  "sd_auc": 0.06917261530094683,
+  "folds_done": 10,
+  "status": "ok",
+  "seconds": 540.6
+}

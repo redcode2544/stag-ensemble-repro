@@ -1,0 +1,32 @@
+{
+ "AVFDRKSDAK": {
+  "SeqExt": {
+   "mean": 0.5345514891448759,
+   "spread": 0.026302666532223462,
+   "per_init": [
+    0.5477028224109877,
+    0.5214001558787642
+   ]
+  },
+  "SeqExtOnly": {
+   "mean": 0.5284739134719001,
+   "spread": 0.0003684813061544112,
+   "per_init": [
+    0.5286581541249773,
+    0.5282896728188229
+   ]
+  },
+  "_aux": {
+   "curated_raw": 36,
+   "curated_kept": 35,
+   "curated_dropped": 1,
+   "background": 200,
+   "studies_nontenx": null
+  },
+  "_weights": {
+   "0.0": 4,
+   "1.0": 6
+  },
+  "_guard": "beta"
+ }
+}

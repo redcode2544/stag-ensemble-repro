@@ -1,0 +1,148 @@
+diff --git a/models/STAG/cross_validation.py b/models/STAG/cross_validation.py
+index fb84e7bd..7a8b82ec 100644
+--- a/models/STAG/cross_validation.py
++++ b/models/STAG/cross_validation.py
+@@ -15,6 +15,29 @@ from .encode_structure import *
+ from .model import *
+ from .utils import *
+ 
++# --- local: device selection (upstream hardcoded 'cuda') ---
++import os as _os
++def _pick_device():
++    want = _os.environ.get('STAG_DEVICE', 'auto').lower()
++    if want not in ('auto', 'cpu', 'mps', 'cuda'):
++        raise ValueError("STAG_DEVICE must be auto, cpu, mps or cuda")
++    if want != 'auto':
++        return torch.device(want)
++    if torch.cuda.is_available():
++        return torch.device('cuda')
++    if getattr(torch.backends, 'mps', None) is not None and torch.backends.mps.is_available():
++        return torch.device('mps')
++    return torch.device('cpu')
++
++DEVICE = _pick_device()
++
++def _empty_cache():
++    if DEVICE.type == 'cuda':
++        torch.cuda.empty_cache()
++    elif DEVICE.type == 'mps':
++        torch.mps.empty_cache()
++# --- end local ---
++
+ def get_graphs(data_table,data_dir):
+     df = pd.read_csv(data_table,index_col=0)
+     graphs = []
+@@ -34,10 +57,10 @@ def run(loader,model,criterion,optimizer,training=False):
+     loss = 0
+     y_truth,y_hat = [],[]
+     for data in loader:
+-        data = data.to('cuda')
++        data = data.to(DEVICE)
+         out = model(data.x,data.edge_index,data.edge_attr,data.batch)
+         if training:
+-            loss = criterion(out, data.y.float().to('cuda'))
++            loss = criterion(out, data.y.float().to(DEVICE))
+             loss.backward()
+             grad_norm = nn.utils.clip_grad_norm_(model.parameters(), 5)
+ #             print(grad_norm)
+@@ -69,15 +92,15 @@ def cross_validation(data_table,data_dir,k=5,verbose=False):
+         train_graphs = [graph for graph in data if df.loc[graph.fold]['fold'] not in [i]]
+         test_graphs = [graph for graph in data if df.loc[graph.fold]['fold'] == i]
+         y_test_ids = np.array([graph.index for graph in test_graphs])
+-        train_data_list = [torch_geometric.data.Data(x=graph.get_node_data(),edge_index=graph.edge_index,edge_attr=graph.edge_attr,y=graph.label) for graph in train_graphs]
+-        test_data_list = [torch_geometric.data.Data(x=graph.get_node_data(),edge_index=graph.edge_index,edge_attr=graph.edge_attr,y=graph.label) for graph in test_graphs]
++        train_data_list = [torch_geometric.data.Data(x=graph.get_node_data(),edge_index=graph.edge_index,edge_attr=graph.edge_attr,y=torch.tensor([graph.label],dtype=torch.float32)) for graph in train_graphs]
++        test_data_list = [torch_geometric.data.Data(x=graph.get_node_data(),edge_index=graph.edge_index,edge_attr=graph.edge_attr,y=torch.tensor([graph.label],dtype=torch.float32)) for graph in test_graphs]
+         train_loader = torch_geometric.loader.DataLoader(train_data_list,batch_size=256,shuffle=True)
+         test_loader = torch_geometric.loader.DataLoader(test_data_list,batch_size=64,shuffle=False)
+ 
+-        stag = STAG().to('cuda')
++        stag = STAG().to(DEVICE)
+         stag.apply(init_weights)
+         optimizer = torch.optim.Adam(stag.parameters(), lr=0.0001)
+-        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor((1-np.mean(df['label']))/np.mean(df['label'])))
++        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor((1-np.mean(df['label']))/np.mean(df['label']),dtype=torch.float32).to(DEVICE))
+ 
+         best_test_auc = 0
+         stop = 0
+@@ -99,7 +122,7 @@ def cross_validation(data_table,data_dir,k=5,verbose=False):
+                         stag.eval()
+                         y_test_targets,pred = [],[]
+                         for data in test_loader:
+-                            data = data.to('cuda')
++                            data = data.to(DEVICE)
+                             out = stag(data.x,data.edge_index,data.edge_attr,data.batch)
+                             y_test_targets = np.concatenate((y_test_targets,data.y.detach().to('cpu').numpy()))
+                             out = out.detach().to('cpu').numpy()
+@@ -107,9 +130,7 @@ def cross_validation(data_table,data_dir,k=5,verbose=False):
+                                 out = [out]
+                             pred = np.concatenate((pred,out))
+ 
+-                        final_preds = pd.DataFrame(columns=['index','label','pred'])
+-                        for j in range(len(pred)):
+-                            final_preds = final_preds.append({'index':y_test_ids[j],'label':y_test_targets[j],'pred':pred[j]},ignore_index=True)
++                        final_preds = pd.DataFrame({'index':y_test_ids[:len(pred)],'label':y_test_targets,'pred':pred})
+ 
+                 t.set_description(f"test_auc: {str(best_test_auc)}")
+                 stop = stop + 1
+@@ -137,7 +158,7 @@ def cross_validation(data_table,data_dir,k=5,verbose=False):
+             del stag
+             del optimizer
+             del criterion
+-            torch.cuda.empty_cache()
++            _empty_cache()
+ 
+     print('#'*50)
+     print('ROC-AUCs: ',AUCs)
+diff --git a/models/STAG/encode_structure.py b/models/STAG/encode_structure.py
+index 0795d1ca..2045fda3 100644
+--- a/models/STAG/encode_structure.py
++++ b/models/STAG/encode_structure.py
+@@ -13,6 +13,25 @@ warnings.filterwarnings('ignore')
+ 
+ from .utils import *
+ 
++# --- local: radius_graph without torch-cluster ---
++def _radius_graph_fallback(pos, r, loop=False):
++    """Dense pairwise equivalent of torch_cluster.radius_graph.
++    Same output semantics (edge_index, both directions, self-loops optional).
++    Graphs here are a few hundred residues, so the dense distance matrix is cheap."""
++    d = torch.cdist(pos, pos)
++    mask = d < r
++    if not loop:
++        mask.fill_diagonal_(False)
++    row, col = mask.nonzero(as_tuple=True)
++    return torch.stack([col, row], dim=0)
++
++def _radius_graph(pos, r, loop=False):
++    try:
++        return gnn.radius_graph(pos, r=r, loop=loop)
++    except ImportError:
++        return _radius_graph_fallback(pos, r, loop=loop)
++# --- end local ---
++
+ class Node():
+     def __init__(self,coord,chain,indx,res,data):
+         self.coord = coord
+@@ -98,7 +117,7 @@ def get_graph(pdb,label,fold,roi_radius = 14, edge_radius = 8):
+     edge_indicies, _, mask = remove_isolated_nodes(res_graph.edge_index)
+     res_graph.edge_index = edge_indicies
+     res_graph.nodes = [res_graph.nodes[i] for i in range(len(mask)) if mask[i]]
+-    res_graph.set_edge_index(gnn.radius_graph(res_graph.get_coords(), r=edge_radius, loop=False))
++    res_graph.set_edge_index(_radius_graph(res_graph.get_coords(), r=edge_radius, loop=False))
+     return res_graph
+ 
+ def add_edge_data(graph):
+diff --git a/models/STAG/model.py b/models/STAG/model.py
+index 7c9f00f4..0d514aec 100644
+--- a/models/STAG/model.py
++++ b/models/STAG/model.py
+@@ -88,7 +88,7 @@ class EVTConv(MessagePassing):
+ #         value = self.lin_value(x[0]).view(-1, H, C)
+         value = x[0]
+ 
+-        # propagate_type: (x: OptPairTensor, edge_attr: OptTensor)
++        # propagate_type: (query: Tensor, key: Tensor, value: Tensor, edge_attr: OptTensor)
+         out = self.propagate(edge_index, query=query, key=key, value=value, edge_attr=edge_attr, size=size)
+ 
+         alpha = self._alpha

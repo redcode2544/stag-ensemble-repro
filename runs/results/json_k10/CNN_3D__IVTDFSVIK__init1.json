@@ -1,0 +1,28 @@
+{
+  "method": "CNN_3D",
+  "dataset": "IVTDFSVIK",
+  "k": 10,
+  "torch_seed": 1,
+  "split_seed": 20261107,
+  "complexes": 335,
+  "positive_rate": 0.2656716417910448,
+  "upstream_commit": "06c30a57",
+  "deviation": "STAG_FOLDS hook so every method shares one split",
+  "fold_auc": [
+    0.7569444444444444,
+    0.5625,
+    0.6386554621848739,
+    0.8828125,
+    0.7291666666666667,
+    0.5928571428571427,
+    0.7789473684210526,
+    0.588235294117647,
+    0.9365079365079365,
+    0.7762237762237763
+  ],
+  "mean_auc": 0.724285059142354,
+  "sd_auc": 0.12746905162056807,
+  "folds_done": 10,
+  "status": "ok",
+  "seconds": 178.1
+}

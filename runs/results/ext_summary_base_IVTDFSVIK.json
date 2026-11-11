@@ -1,0 +1,23 @@
+{
+ "IVTDFSVIK": {
+  "SeqCdr3": {
+   "mean": 0.7069671396499424,
+   "spread": 0.00021321171620269919,
+   "per_init": [
+    0.7070737455080437,
+    0.706860533791841
+   ]
+  },
+  "_aux": {
+   "curated_raw": 43,
+   "curated_kept": 40,
+   "curated_dropped": 3,
+   "background": 200,
+   "studies_nontenx": null
+  },
+  "_weights": {
+   "0.0": 10
+  },
+  "_guard": "beta"
+ }
+}

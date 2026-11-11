@@ -1,0 +1,23 @@
+{
+ "GLCTLVAML": {
+  "SeqCdr3": {
+   "mean": 0.7883479390040078,
+   "spread": 0.006609663396441534,
+   "per_init": [
+    0.785043107305787,
+    0.7916527707022285
+   ]
+  },
+  "_aux": {
+   "curated_raw": 644,
+   "curated_kept": 565,
+   "curated_dropped": 79,
+   "background": 2431,
+   "studies_nontenx": null
+  },
+  "_weights": {
+   "0.0": 10
+  },
+  "_guard": "beta"
+ }
+}

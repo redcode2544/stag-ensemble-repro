@@ -1,0 +1,23 @@
+{
+ "ELAGIGILTV": {
+  "SeqCdr3": {
+   "mean": 0.8285301048297896,
+   "spread": 0.0,
+   "per_init": [
+    0.8285301048297896,
+    0.8285301048297896
+   ]
+  },
+  "_aux": {
+   "curated_raw": 172,
+   "curated_kept": 149,
+   "curated_dropped": 23,
+   "background": 390,
+   "studies_nontenx": null
+  },
+  "_weights": {
+   "0.0": 10
+  },
+  "_guard": "beta"
+ }
+}
