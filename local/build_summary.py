@@ -5,7 +5,8 @@ Oat, 2026-11-11: "report งงมากเลขเยอะไปหมดไ�
 บอกว่าใช้ model อะไรตรงได้ชัดๆด้วยในตาราง"
 
 Input : runs/results/fusion_all.json
-Output: runs/report.html   (overwritten in place — Oat's standing instruction)
+Output: runs/report_choice.html  (superseded by local/build_matrix.py, which owns
+        runs/report.html since Oat asked for the model x dataset matrix instead)
         The long version lives in runs/report_full.html (local/build_report.py).
 
 Run with python3 3.9+:  /usr/bin/python3 local/build_summary.py
@@ -18,7 +19,7 @@ import pathlib
 
 HERE = pathlib.Path(__file__).resolve().parent.parent
 FUSION = HERE / "runs" / "results" / "fusion_all.json"
-OUT = HERE / "runs" / "report.html"
+OUT = HERE / "runs" / "report_choice.html"
 BAR = 0.75
 HEAD = "auto2"
 # "label เชื่อได้" is the paper's own cut, by HLA, not a judgement of ours:

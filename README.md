@@ -28,9 +28,15 @@ chosen on the folds that are *not* being scored.
 | **mean, all 8** | | **0.756** | 0.723 | +0.033 |
 | **mean, 5 reliable (not A\*03/A\*11)** | | **0.824** | 0.789 | +0.034 |
 
-`runs/report.html` is a one-table summary naming the model used for each dataset;
-`runs/report_full.html` is the long per-member, per-rule breakdown. Both are written in Thai;
-every number in them is also in this README and in `runs/results/fusion_all.json`.
+`runs/report.html` is the whole result as one matrix — every model's AUC on every dataset, with
+both fused columns at the right. `runs/report_full.html` is the long per-member, per-rule breakdown.
+Both are written in Thai; every number in them is also in this README and in
+`runs/results/fusion_all.json`.
+
+**Fusing all five streams with stacking scores 0.756 too** (0.7564 against 0.7557 for the
+per-dataset rule selection above). The selection machinery buys +0.0008 — nothing. If you want one
+sentence for a methods section, "stack all 44 members, weights fitted on the other folds" is both
+simpler and, within noise, the same number.
 
 ## Read this before quoting any number
 
@@ -125,7 +131,7 @@ python3 seqmodel/embed_esm.py && python3 seqmodel/train_esm.py   # stream 5
 
 # 3. fuse and report
 python3 local/fuse_all.py            # writes runs/results/fusion_all.json
-python3 local/build_summary.py       # writes runs/report.html (the summary table)
+python3 local/build_matrix.py        # writes runs/report.html (model x dataset matrix)
 python3 local/build_report.py        # writes runs/report_full.html (the long version)
 ```
 

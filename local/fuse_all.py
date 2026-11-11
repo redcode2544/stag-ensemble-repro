@@ -31,7 +31,7 @@ TREES = {"struct": HERE / "runs" / "results" / "preds_seed",
          "esm":    HERE / "runs" / "results" / "preds_esm",
          "pu":     HERE / "runs" / "results" / "preds_pu",
          "dedup":  HERE / "runs" / "results" / "preds_dedup",
-         # 2026-11-11: two new structure encoders trained on a SLURM cluster at k=5 on
+         # 2026-11-11: two new structure encoders trained on SLURM cluster at k=5 on
          # the same folds (verified 9,343/9,343 index+label on all 8 datasets).
          # Both LOSE to STAG alone on 8/8 datasets, and both still pay in the
          # fusion -- at k=10 they bought +0.0094, all of it on the hard sets.
@@ -187,7 +187,12 @@ for ds in DATASETS:
              "structseq": [ms for ms in members if ms[0] in STRUCT_M + SEQ_M],
              "all":       members}
 
-    def score(f, kind, pool, other):
+    # (pool name, rule, fold) -> {member: weight}. Recorded so the question
+    # "which models does the ensemble actually use" is answered from the run
+    # rather than from the pool definition. Oat asked, 2026-11-11.
+    WEIGHTS = {}
+
+    def score(f, kind, pool, other, pname=None):
         """Scores for fold f. Every weight is estimated from `other` folds only."""
         lab, rk = per_fold[f]; n = len(lab)
         if kind == "soft":
@@ -195,6 +200,8 @@ for ds in DATASETS:
         if kind == "dprime":
             w = {ms: max(dprime(mean(mem_auc[ms][g] for g in other)), 0.0) for ms in pool}
             tot = sum(w.values()) or 1.0
+            if pname:
+                WEIGHTS[(pname, "dprime", f)] = {f"{m}|{i}": v / tot for (m, i), v in w.items()}
             return [sum(w[ms] * rk[ms][i] for ms in pool) / tot for i in range(n)]
         if kind == "maxconf":
             return [rk[max(pool, key=lambda ms: abs(rk[ms][i] - 0.5))][i] for i in range(n)]
@@ -205,6 +212,9 @@ for ds in DATASETS:
                 for i in range(len(l2)):
                     X.append([r2[ms][i] for ms in pool]); y.append(1.0 if l2[i] == 1 else 0.0)
             w = fit_logistic(X, y)
+            if pname:
+                WEIGHTS[(pname, "stacking", f)] = {
+                    f"{pool[j][0]}|{pool[j][1]}": float(w[j + 1]) for j in range(len(pool))}
             return [w[0] + sum(w[j + 1] * rk[pool[j]][i] for j in range(len(pool)))
                     for i in range(n)]
         raise ValueError(kind)
@@ -215,7 +225,7 @@ for ds in DATASETS:
     cand_s = {}                    # (pool, rule) -> fold -> scores
     for pname, pool in POOLS.items():
         if len(pool) < 2: continue
-        sc = {k: {f: score(f, k, pool, idxf[f]) for f in folds} for k in RULES}
+        sc = {k: {f: score(f, k, pool, idxf[f], pname) for f in folds} for k in RULES}
         per_rule = {k: [auc(list(zip(per_fold[f][0], sc[k][f]))) for f in folds]
                     for k in RULES}
         for k, v in per_rule.items():
@@ -250,14 +260,19 @@ for ds in DATASETS:
         # variance instead of betting on it. Scores are rank-normalised first
         # because stacking returns logits and soft returns means.
         TOPM = 5
-        comm = []
+        comm, comm_top = [], []
         for f in folds:
             pos = [folds.index(x) for x in idxf[f]]
             top = sorted(grid, key=lambda pk: -mean(grid[pk][g] for g in pos))[:TOPM]
+            # Which pools the committee actually averaged, so "how many streams
+            # does the ensemble use" can be answered from the output instead of
+            # guessed. Oat asked, 2026-11-11.
+            comm_top.append([f"{a}/{b}" for a, b in top])
             rn = [ranknorm(cand_s[c][f]) for c in top]
             agg = [mean(v[i] for v in rn) for i in range(len(rn[0]))]
             comm.append(auc(list(zip(per_fold[f][0], agg))))
         fused["committee"] = comm
+        report.setdefault(ds, {}).setdefault("_picks", {})["committee_top"] = comm_top
 
         # Drop members the other folds show at or below chance, then weight the
         # rest by d'. A member at 0.5 already gets weight 0 from d'; one at 0.45
@@ -280,6 +295,11 @@ for ds in DATASETS:
         grid2 = dict(grid)
         grid2[("*", "committee")] = comm
         grid2[("*", "screened")] = scr
+        # The weights behind the combo auto2 actually chose, per fold.
+        def used_weights(tag, f):
+            pool, _, rule = tag.partition("/")
+            return WEIGHTS.get((pool, rule, f))
+
         sel2, picks2 = [], []
         for f in folds:
             pos = [folds.index(x) for x in idxf[f]]
@@ -288,6 +308,8 @@ for ds in DATASETS:
             sel2.append(grid2[best][folds.index(f)])
         fused["auto2"] = sel2
         report.setdefault(ds, {}).setdefault("_picks", {})["auto2"] = picks2
+        report[ds]["_picks"]["auto2_weights"] = [used_weights(picks2[j], folds[j])
+                                                 for j in range(len(folds))]
 
     best_mem = max(members, key=lambda ms: mean(mem_auc[ms]))
     best_struct = max((ms for ms in members if ms[0] in STRUCT_M),
