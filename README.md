@@ -11,6 +11,9 @@ chosen on the folds that are *not* being scored.
 
 <sub>Vector version: [docs/workflow.svg](docs/workflow.svg)</sub>
 
+**Frozen at tag `v1.0` (14 November 2026)** — the complete first round, negative results included.
+`git checkout v1.0` returns exactly this state; later work continues from a new branch.
+
 ---
 
 ## Results
